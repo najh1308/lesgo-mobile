@@ -1,20 +1,29 @@
 import 'package:flutter/material.dart';
 
 import 'core/api_client.dart';
+import 'core/app_settings.dart';
+import 'core/local_db.dart';
 import 'core/theme.dart';
 import 'models/models.dart';
 import 'screens/daftar_screen.dart';
 import 'screens/detail_screen.dart';
+import 'screens/game_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_shell.dart';
 import 'screens/register_screen.dart';
 import 'screens/saran_kesan_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/sukses_screen.dart';
+import 'screens/tutor_ai_screen.dart';
 import 'screens/welcome_screen.dart';
+import 'services/notifikasi_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await LocalDb.init(); // Hive: database lokal
+  await ApiClient.init(); // Supabase: database online
+  await NotifikasiService.init();
+  await AppSettings.i.muatLokal(); // mata uang & zona dari Hive
   runApp(const LesGoApp());
 }
 
@@ -60,6 +69,12 @@ class LesGoApp extends StatelessWidget {
         break;
       case '/saran':
         page = const SaranKesanScreen();
+        break;
+      case '/tutor':
+        page = const TutorAiScreen();
+        break;
+      case '/game':
+        page = const GameScreen();
         break;
       default:
         page = const SplashScreen();

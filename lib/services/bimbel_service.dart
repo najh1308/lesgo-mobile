@@ -24,21 +24,21 @@ class BimbelService {
     int perPage = 30,
     String? cacheKey,
   }) async {
-    final query = <String, String>{
-      if (lat != null) 'lat': '$lat',
-      if (lng != null) 'lng': '$lng',
-      if (q != null && q.isNotEmpty) 'q': q,
-      if (jenjang != null) 'jenjang': jenjang,
-      if (mapel != null) 'mapel': mapel,
-      if (mode != null) 'mode': mode,
-      if (hargaMax != null) 'harga_max': '$hargaMax',
-      if (ratingMin != null) 'rating_min': '$ratingMin',
-      if (radius != null) 'radius': '$radius',
-      if (sort != null) 'sort': sort,
-      'per_page': '$perPage',
+    final params = <String, dynamic>{
+      if (lat != null) 'p_lat': lat,
+      if (lng != null) 'p_lng': lng,
+      if (q != null && q.isNotEmpty) 'p_q': q,
+      if (jenjang != null) 'p_jenjang': jenjang,
+      if (mapel != null) 'p_mapel': mapel,
+      if (mode != null) 'p_mode': mode,
+      if (hargaMax != null) 'p_harga_max': hargaMax,
+      if (ratingMin != null) 'p_rating_min': ratingMin,
+      if (radius != null) 'p_radius': radius,
+      if (sort != null) 'p_sort': sort,
+      'p_per_page': perPage,
     };
     try {
-      final data = await ApiClient.get('/bimbel', query: query);
+      final data = await ApiClient.rpcAuth('api_bimbel_list', params);
       final items = data['items'] as List;
       if (cacheKey != null) await LocalDb.putCache(cacheKey, jsonEncode(items));
       return _parse(items);
@@ -52,32 +52,29 @@ class BimbelService {
   }
 
   static Future<BimbelDetail> detail(int id, {double? lat, double? lng}) async {
-    final data = await ApiClient.get('/bimbel/$id', query: {
-      if (lat != null) 'lat': '$lat',
-      if (lng != null) 'lng': '$lng',
+    final data = await ApiClient.rpcAuth('api_bimbel_detail', {
+      'p_id': id,
+      if (lat != null) 'p_lat': lat,
+      if (lng != null) 'p_lng': lng,
     });
     return BimbelDetail.fromJson(Map<String, dynamic>.from(data));
   }
 
   static Future<List<Review>> reviews(int id) async {
-    final data = await ApiClient.get('/bimbel/$id/review') as List;
+    final data = await ApiClient.rpcAuth('api_review_list', {'p_bimbel_id': id}) as List;
     return data.map((e) => Review.fromJson(Map<String, dynamic>.from(e))).toList();
   }
 
   static Future<void> tambahReview(int id, int rating, String komentar) async {
-    await ApiClient.post('/bimbel/$id/review', body: {'rating': rating, 'komentar': komentar});
+    await ApiClient.rpcAuth('api_review_add', {'p_bimbel_id': id, 'p_rating': rating, 'p_komentar': komentar});
   }
 
   static Future<List<Bimbel>> favorit() async {
-    final data = await ApiClient.get('/favorit') as List;
+    final data = await ApiClient.rpcAuth('api_favorit_list') as List;
     return _parse(data);
   }
 
   static Future<void> setFavorit(int id, bool aktif) async {
-    if (aktif) {
-      await ApiClient.post('/favorit/$id');
-    } else {
-      await ApiClient.delete('/favorit/$id');
-    }
+    await ApiClient.rpcAuth('api_favorit_set', {'p_bimbel_id': id, 'p_aktif': aktif});
   }
 }

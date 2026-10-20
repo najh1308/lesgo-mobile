@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../services/notifikasi_service.dart';
 import 'aktivitas_screen.dart';
 import 'belajar_screen.dart';
 import 'home_screen.dart';
@@ -28,6 +29,7 @@ class _MainShellState extends State<MainShell> {
   void initState() {
     super.initState();
     ShellController.tab.value = 0;
+    NotifikasiService.mintaIzin(); // Android 13+: tampilkan dialog izin notifikasi
   }
 
   @override

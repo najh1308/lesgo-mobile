@@ -39,10 +39,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fotoBaru() async {
-    final f = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 80, maxWidth: 1024);
+    // Diperkecil agar muat disimpan di database (sekitar 20-60 KB).
+    final f = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 70, maxWidth: 400, maxHeight: 400);
     if (f == null) return;
     try {
-      await AuthService.uploadFoto(f.path);
+      await AuthService.uploadFoto(await f.readAsBytes());
       if (mounted) {
         setState(() {});
         showMsg(context, 'Foto profil diperbarui');
@@ -150,8 +151,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             CircleAvatar(
               radius: 52,
               backgroundColor: AppColors.primary.withAlpha(30),
-              backgroundImage: u.fotoUrl != null ? NetworkImage(u.fotoUrl!) : null,
-              child: u.fotoUrl == null
+              backgroundImage: u.foto,
+              child: u.foto == null
                   ? Text(u.nama.isEmpty ? '?' : u.nama[0].toUpperCase(),
                       style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: AppColors.primary))
                   : null,

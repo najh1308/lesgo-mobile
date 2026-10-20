@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter/widgets.dart';
+
 double _d(dynamic v) => v == null ? 0 : (v as num).toDouble();
 int _i(dynamic v) => v == null ? 0 : (v as num).toInt();
 List<String> _list(dynamic v) =>
@@ -6,7 +10,7 @@ List<String> _list(dynamic v) =>
 class UserModel {
   final int id;
   final String nama, email, noHp, mataUang, zonaWaktu;
-  final String? fotoUrl;
+  final String? fotoBase64;
   UserModel({
     required this.id,
     required this.nama,
@@ -14,8 +18,20 @@ class UserModel {
     required this.noHp,
     required this.mataUang,
     required this.zonaWaktu,
-    this.fotoUrl,
+    this.fotoBase64,
   });
+
+  /// Foto profil dari base64 yang disimpan di Supabase (dibuat sekali, lalu dipakai ulang).
+  late final ImageProvider? foto = _buatFoto();
+
+  ImageProvider? _buatFoto() {
+    if (fotoBase64 == null || fotoBase64!.isEmpty) return null;
+    try {
+      return MemoryImage(base64Decode(fotoBase64!));
+    } catch (_) {
+      return null;
+    }
+  }
 
   factory UserModel.fromJson(Map<String, dynamic> j) => UserModel(
         id: _i(j['id']),
@@ -24,7 +40,7 @@ class UserModel {
         noHp: j['no_hp'] ?? '',
         mataUang: j['mata_uang_pref'] ?? 'IDR',
         zonaWaktu: j['zona_waktu_pref'] ?? 'WIB',
-        fotoUrl: j['foto_url'],
+        fotoBase64: j['foto_base64'],
       );
 }
 

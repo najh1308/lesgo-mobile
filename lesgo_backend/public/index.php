@@ -15,7 +15,7 @@ if (PHP_SAPI === 'cli-server') {
 require dirname(__DIR__) . '/src/bootstrap.php';
 
 use Controllers\{AuthController, BimbelController, FavoritController, PendaftaranController,
-    BlockchainController, KursController, GameController, SaranKesanController};
+    BlockchainController, KursController, GameController, SaranKesanController, AiController};
 use Core\{HttpException, Request, Response, Router};
 
 header('Access-Control-Allow-Origin: *');
@@ -66,6 +66,9 @@ $r->add('POST', '/api/game/skor', [GameController::class, 'simpanSkor']);
 $r->add('GET',  '/api/game/leaderboard', [GameController::class, 'leaderboard']);
 $r->add('POST', '/api/saran-kesan', [SaranKesanController::class, 'store']);
 $r->add('GET',  '/api/saran-kesan', [SaranKesanController::class, 'index']);
+
+// Tutor AI (LLM)
+$r->add('POST', '/api/ai/tanya', [AiController::class, 'tanya']);
 
 try {
     $r->dispatch(new Request());

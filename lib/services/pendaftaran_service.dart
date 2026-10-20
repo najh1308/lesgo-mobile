@@ -1,5 +1,6 @@
 import '../core/api_client.dart';
 import '../models/models.dart';
+import 'notifikasi_service.dart';
 
 class PendaftaranService {
   static Future<Pendaftaran> daftar({
@@ -7,30 +8,33 @@ class PendaftaranService {
     required int jadwalId,
     required String metodeBayar,
   }) async {
-    final data = await ApiClient.post('/pendaftaran', body: {
-      'program_id': programId,
-      'jadwal_id': jadwalId,
-      'metode_bayar': metodeBayar,
+    final data = await ApiClient.rpcAuth('api_pendaftaran_create', {
+      'p_program_id': programId,
+      'p_jadwal_id': jadwalId,
+      'p_metode_bayar': metodeBayar,
     });
-    return Pendaftaran.fromJson(Map<String, dynamic>.from(data['pendaftaran']));
+    final p = Pendaftaran.fromJson(Map<String, dynamic>.from(data['pendaftaran']));
+    await NotifikasiService.pendaftaranBerhasil(p);
+    return p;
   }
 
   static Future<List<Pendaftaran>> list() async {
-    final data = await ApiClient.get('/pendaftaran') as List;
+    final data = await ApiClient.rpcAuth('api_pendaftaran_list') as List;
     return data.map((e) => Pendaftaran.fromJson(Map<String, dynamic>.from(e))).toList();
   }
 
   static Future<void> batal(int id) async {
-    await ApiClient.put('/pendaftaran/$id/batal');
+    await ApiClient.rpcAuth('api_pendaftaran_batal', {'p_id': id});
+    await NotifikasiService.batalkanPengingat(id);
   }
 
   static Future<List<BlockItem>> blocks() async {
-    final data = await ApiClient.get('/blockchain') as List;
+    final data = await ApiClient.rpcAuth('api_blockchain_list') as List;
     return data.map((e) => BlockItem.fromJson(Map<String, dynamic>.from(e))).toList();
   }
 
   static Future<ValidasiHasil> validasi() async {
-    final res = await ApiClient.get('/blockchain/validate');
+    final res = await ApiClient.rpcAuth('api_blockchain_validate');
     final m = Map<String, dynamic>.from(res);
     final valid = m['valid'] == true;
     return ValidasiHasil(

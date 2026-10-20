@@ -33,7 +33,7 @@ class _SaranKesanScreenState extends State<SaranKesanScreen> {
 
   Future<void> _muat() async {
     try {
-      final data = await ApiClient.get('/saran-kesan') as List;
+      final data = await ApiClient.rpcAuth('api_saran_kesan_list') as List;
       if (mounted) setState(() => _riwayat = data.map((e) => Map<String, dynamic>.from(e)).toList());
     } on ApiException {
       // Riwayat bersifat tambahan; abaikan jika gagal dimuat.
@@ -47,7 +47,7 @@ class _SaranKesanScreenState extends State<SaranKesanScreen> {
     }
     setState(() => _loading = true);
     try {
-      await ApiClient.post('/saran-kesan', body: {'saran': _saran.text.trim(), 'kesan': _kesan.text.trim()});
+      await ApiClient.rpcAuth('api_saran_kesan_kirim', {'p_saran': _saran.text.trim(), 'p_kesan': _kesan.text.trim()});
       _saran.clear();
       _kesan.clear();
       if (mounted) showMsg(context, 'Terima kasih, saran dan kesan terkirim');

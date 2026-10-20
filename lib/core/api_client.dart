@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show FunctionException, PostgrestException, Supabase, SupabaseClient;
 
 import 'config.dart';
 import 'session.dart';
@@ -22,71 +22,97 @@ class ApiException implements Exception {
 /// Dipakai untuk pindah ke halaman login saat token ditolak (401).
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-/// Klien HTTP tunggal: menambahkan token, memeriksa status, dan mengambil field `data`.
+/// Penghubung ke web service di Supabase.
+/// - [rpc]   : memanggil fungsi database api_* (lihat supabase/01_skema_dan_fungsi.sql)
+/// - [fungsi]: memanggil Edge Function (misalnya tutor-ai)
+/// Token login buatan sendiri dikirim sebagai parameter p_token.
 class ApiClient {
-  static const _timeout = Duration(seconds: 15);
+  static const _timeout = Duration(seconds: 20);
 
-  static Uri _uri(String path, [Map<String, String>? query]) =>
-      Uri.parse('${Config.baseUrl}/api$path').replace(queryParameters: query);
+  static SupabaseClient get _db => Supabase.instance.client;
 
-  static Map<String, String> _headers({bool json = true}) {
-    final h = <String, String>{'Accept': 'application/json'};
-    if (json) h['Content-Type'] = 'application/json';
-    if (Session.token != null) h['Authorization'] = 'Bearer ${Session.token}';
-    return h;
+  static Future<void> init() async {
+    if (!Config.sudahDiisi) return; // pesan jelas akan muncul saat aplikasi memanggil server
+    try {
+      await Supabase.initialize(url: Config.supabaseUrl, publishableKey: Config.supabaseKey);
+    } catch (e) {
+      debugPrint('Supabase gagal disiapkan: $e');
+    }
   }
 
-  static Future<dynamic> get(String path, {Map<String, String>? query}) =>
-      _send(() => http.get(_uri(path, query), headers: _headers()));
-
-  static Future<dynamic> post(String path, {Object? body}) => _send(() =>
-      http.post(_uri(path), headers: _headers(), body: jsonEncode(body ?? {})));
-
-  static Future<dynamic> put(String path, {Object? body}) => _send(() =>
-      http.put(_uri(path), headers: _headers(), body: jsonEncode(body ?? {})));
-
-  static Future<dynamic> delete(String path) =>
-      _send(() => http.delete(_uri(path), headers: _headers()));
-
-  /// Unggah satu file (multipart), misalnya foto profil.
-  static Future<dynamic> upload(String path, String field, String filePath) =>
-      _send(() async {
-        final req = http.MultipartRequest('POST', _uri(path))
-          ..headers.addAll(_headers(json: false))
-          ..files.add(await http.MultipartFile.fromPath(field, filePath));
-        return http.Response.fromStream(await req.send());
-      });
-
-  static Future<dynamic> _send(Future<http.Response> Function() call) async {
-    http.Response res;
+  /// Fungsi tanpa login (register, login).
+  static Future<dynamic> rpc(String fn, [Map<String, dynamic> params = const {}]) async {
+    if (!Config.sudahDiisi) {
+      throw ApiException('Alamat Supabase belum diisi di lib/core/config.dart', isNetwork: true);
+    }
     try {
-      res = await call().timeout(_timeout);
-    } on SocketException {
-      throw ApiException('Tidak dapat terhubung ke server. Periksa koneksi internet.', isNetwork: true);
+      return await _db.rpc(fn, params: params).timeout(_timeout);
+    } on PostgrestException catch (e) {
+      throw await _dariPostgrest(e);
     } on TimeoutException {
       throw ApiException('Server terlalu lama merespons. Coba lagi.', isNetwork: true);
-    } on http.ClientException {
+    } on ApiException {
+      rethrow;
+    } catch (_) {
       throw ApiException('Tidak dapat terhubung ke server. Periksa koneksi internet.', isNetwork: true);
     }
+  }
 
-    Map<String, dynamic> body;
-    try {
-      body = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
-    } catch (_) {
-      throw ApiException('Respons server tidak dikenali (kode ${res.statusCode}).', status: res.statusCode);
+  /// Fungsi yang butuh login: token ditambahkan otomatis.
+  static Future<dynamic> rpcAuth(String fn, [Map<String, dynamic> params = const {}]) =>
+      rpc(fn, {'p_token': Session.token, ...params});
+
+  /// Memanggil Edge Function. Respons berbentuk {status, pesan, data}.
+  static Future<dynamic> fungsi(String nama, Map<String, dynamic> body) async {
+    if (!Config.sudahDiisi) {
+      throw ApiException('Alamat Supabase belum diisi di lib/core/config.dart', isNetwork: true);
     }
+    try {
+      final res = await _db.functions
+          .invoke(nama, body: {'token': Session.token, ...body})
+          .timeout(const Duration(seconds: 60));
+      final data = res.data;
+      return data is Map ? data['data'] : data;
+    } on FunctionException catch (e) {
+      final d = e.details;
+      final pesan = d is Map && d['pesan'] != null ? d['pesan'].toString() : 'Layanan sedang bermasalah (kode ${e.status}).';
+      await _cek401(e.status);
+      throw ApiException(pesan, status: e.status);
+    } on TimeoutException {
+      throw ApiException('Server terlalu lama merespons. Coba lagi.', isNetwork: true);
+    } catch (_) {
+      throw ApiException('Tidak dapat terhubung ke server. Periksa koneksi internet.', isNetwork: true);
+    }
+  }
 
-    if (res.statusCode >= 400) {
-      if (res.statusCode == 401 && Session.token != null) {
-        await Session.clear();
-        navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (r) => false);
-      }
-      throw ApiException(
-        body['pesan']?.toString() ?? 'Terjadi kesalahan',
-        status: res.statusCode,
-        errors: Map<String, dynamic>.from(body['errors'] ?? {}),
+  /// Fungsi SQL melempar error dengan kode status di "hint" dan error per kolom di "details".
+  static Future<ApiException> _dariPostgrest(PostgrestException e) async {
+    final status = int.tryParse(e.hint ?? '') ?? 0;
+    if (status == 0) {
+      // Bukan error buatan kita, misalnya fungsi belum dibuat di Supabase.
+      final belumAda = e.code == 'PGRST202' || e.message.contains('Could not find the function');
+      return ApiException(
+        belumAda
+            ? 'Fungsi di Supabase belum dibuat. Jalankan supabase/01_skema_dan_fungsi.sql.'
+            : 'Terjadi kesalahan pada server: ${e.message}',
+        status: 500,
       );
     }
-    return body['data'];
+    var errors = <String, dynamic>{};
+    final detail = e.details;
+    if (detail is String && detail.startsWith('{')) {
+      try {
+        errors = Map<String, dynamic>.from(jsonDecode(detail));
+      } catch (_) {}
+    }
+    await _cek401(status);
+    return ApiException(e.message, status: status, errors: errors);
+  }
+
+  static Future<void> _cek401(int status) async {
+    if (status == 401 && Session.token != null) {
+      await Session.clear();
+      navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (r) => false);
+    }
   }
 }

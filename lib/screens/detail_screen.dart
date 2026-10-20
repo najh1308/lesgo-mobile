@@ -11,6 +11,7 @@ import '../services/bimbel_service.dart';
 import '../services/location_service.dart';
 import '../widgets/bimbel_map.dart';
 import '../widgets/common.dart';
+import '../widgets/kompas_bimbel.dart';
 import 'daftar_screen.dart';
 import 'main_shell.dart';
 
@@ -193,6 +194,8 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
       const SizedBox(height: 10),
       OutlinedButton.icon(onPressed: _rute, icon: const Icon(Icons.directions), label: const Text('Lihat Rute')),
+      const SizedBox(height: 12),
+      KompasBimbel(lat: d.lat, lng: d.lng),
       const SizedBox(height: 22),
       const SectionTitle('Program'),
       const SizedBox(height: 8),

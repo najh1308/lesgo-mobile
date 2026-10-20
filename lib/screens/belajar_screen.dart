@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/theme.dart';
 import '../widgets/common.dart';
 
-/// Tab Belajar. Tutor AI dan Hitung Cepat masih placeholder (ditunda ke tahap berikutnya).
+/// Tab Belajar: Tutor AI (LLM) dan mini game Hitung Cepat.
 class BelajarScreen extends StatelessWidget {
   const BelajarScreen({super.key});
 
@@ -20,16 +20,18 @@ class BelajarScreen extends StatelessWidget {
           icon: Icons.smart_toy_outlined,
           warna: AppColors.primary,
           judul: 'Tutor AI',
-          teks: 'Tanya soal dan dapatkan penjelasan instan.',
-          onTap: () => showMsg(context, 'Tutor AI akan hadir di tahap berikutnya'),
+          label: 'AI',
+          teks: 'Tanya soal dan dapatkan penjelasan langkah demi langkah.',
+          onTap: () => Navigator.pushNamed(context, '/tutor'),
         ),
         const SizedBox(height: 14),
         _Kartu(
           icon: Icons.calculate_outlined,
           warna: AppColors.accent,
           judul: 'Hitung Cepat',
-          teks: 'Mini game hitung-hitungan dengan skor dan leaderboard.',
-          onTap: () => showMsg(context, 'Hitung Cepat akan hadir di tahap berikutnya'),
+          label: 'Game',
+          teks: 'Benar atau salah? Jawab dengan memiringkan HP. Ada papan peringkat.',
+          onTap: () => Navigator.pushNamed(context, '/game'),
         ),
       ]),
     );
@@ -39,9 +41,16 @@ class BelajarScreen extends StatelessWidget {
 class _Kartu extends StatelessWidget {
   final IconData icon;
   final Color warna;
-  final String judul, teks;
+  final String judul, teks, label;
   final VoidCallback onTap;
-  const _Kartu({required this.icon, required this.warna, required this.judul, required this.teks, required this.onTap});
+  const _Kartu({
+    required this.icon,
+    required this.warna,
+    required this.judul,
+    required this.teks,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -56,12 +65,13 @@ class _Kartu extends StatelessWidget {
             Row(children: [
               Text(judul, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
               const SizedBox(width: 8),
-              const Pill('Segera hadir', color: AppColors.muted),
+              Pill(label, color: warna),
             ]),
             const SizedBox(height: 4),
             Text(teks, style: const TextStyle(color: AppColors.muted)),
           ]),
         ),
+        const Icon(Icons.chevron_right_rounded, color: AppColors.muted),
       ]),
     );
   }
