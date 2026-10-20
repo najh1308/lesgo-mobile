@@ -1,0 +1,4 @@
+.env
+storage/*.json
+public/uploads/*
+!public/uploads/.gitkeep
