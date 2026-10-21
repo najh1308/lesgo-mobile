@@ -7,6 +7,7 @@ class Session {
   static const _storage = FlutterSecureStorage();
   static const _kToken = 'token';
   static const _kBiometrik = 'biometrik_aktif';
+  static const _kTerkunci = 'terkunci';
 
   static String? token;
   static UserModel? user;
@@ -18,13 +19,26 @@ class Session {
   static Future<void> saveToken(String t) async {
     token = t;
     await _storage.write(key: _kToken, value: t);
+    await bukaKunci();
   }
 
   static Future<void> clear() async {
     token = null;
     user = null;
     await _storage.delete(key: _kToken);
+    await _storage.delete(key: _kTerkunci);
   }
+
+  /// Keluar tapi token tetap disimpan terenkripsi, supaya bisa masuk lagi
+  /// dengan sidik jari (dipakai jika login sidik jari aktif).
+  static Future<void> kunci() async {
+    user = null;
+    await _storage.write(key: _kTerkunci, value: '1');
+  }
+
+  static Future<void> bukaKunci() => _storage.delete(key: _kTerkunci);
+
+  static Future<bool> terkunci() async => (await _storage.read(key: _kTerkunci)) == '1';
 
   static Future<bool> biometrikAktif() async =>
       (await _storage.read(key: _kBiometrik)) == '1';

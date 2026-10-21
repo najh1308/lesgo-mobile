@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme.dart';
 import '../services/notifikasi_service.dart';
 import 'aktivitas_screen.dart';
 import 'belajar_screen.dart';
@@ -12,6 +13,9 @@ class ShellController {
   static final ValueNotifier<int> tab = ValueNotifier<int>(0);
   static final ValueNotifier<int> refresh = ValueNotifier<int>(0);
   static final ValueNotifier<String?> searchQuery = ValueNotifier<String?>(null);
+
+  /// Jenjang yang dipilih dari Beranda (SD/SMP/SMA/UTBK) untuk langsung difilter di tab Cari.
+  static final ValueNotifier<String?> searchJenjang = ValueNotifier<String?>(null);
 
   /// Panggil setelah data berubah (daftar, batal, favorit) agar tab lain memuat ulang.
   static void bump() => refresh.value++;
@@ -47,17 +51,74 @@ class _MainShellState extends State<MainShell> {
             ProfileScreen(),
           ],
         ),
-        bottomNavigationBar: NavigationBar(
-          backgroundColor: Colors.white,
-          selectedIndex: index,
-          onDestinationSelected: (v) => ShellController.tab.value = v,
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Beranda'),
-            NavigationDestination(icon: Icon(Icons.search), label: 'Cari'),
-            NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: 'Belajar'),
-            NavigationDestination(icon: Icon(Icons.calendar_month_outlined), selectedIcon: Icon(Icons.calendar_month), label: 'Aktivitas'),
-            NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profil'),
-          ],
+        bottomNavigationBar: _BottomNav(
+          index: index,
+          onTap: (v) => ShellController.tab.value = v,
+        ),
+      ),
+    );
+  }
+}
+
+/// Navigasi bawah sesuai desain GeoLearn: ikon + label, tab aktif berwarna teal
+/// dengan garis kecil di atasnya.
+class _BottomNav extends StatelessWidget {
+  final int index;
+  final ValueChanged<int> onTap;
+  const _BottomNav({required this.index, required this.onTap});
+
+  static const _items = [
+    (Icons.home_outlined, Icons.home_rounded, 'Beranda'),
+    (Icons.search_rounded, Icons.search_rounded, 'Cari'),
+    (Icons.menu_book_outlined, Icons.menu_book_rounded, 'Belajar'),
+    (Icons.calendar_month_outlined, Icons.calendar_month_rounded, 'Aktivitas'),
+    (Icons.person_outline_rounded, Icons.person_rounded, 'Profil'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppColors.line)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 66,
+          child: Row(children: [
+            for (var i = 0; i < _items.length; i++)
+              Expanded(
+                child: InkWell(
+                  onTap: () => onTap(i),
+                  child: Stack(alignment: Alignment.center, children: [
+                    if (i == index)
+                      Positioned(
+                        top: 0,
+                        child: Container(
+                          width: 24,
+                          height: 3,
+                          decoration: const BoxDecoration(
+                            color: AppColors.teal,
+                            borderRadius: BorderRadius.vertical(bottom: Radius.circular(4)),
+                          ),
+                        ),
+                      ),
+                    Column(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(i == index ? _items[i].$2 : _items[i].$1,
+                          size: 23, color: i == index ? AppColors.teal : const Color(0xFF8C96A6)),
+                      const SizedBox(height: 3),
+                      Text(_items[i].$3,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: i == index ? FontWeight.w700 : FontWeight.w500,
+                            color: i == index ? AppColors.teal : const Color(0xFF8C96A6),
+                          )),
+                    ]),
+                  ]),
+                ),
+              ),
+          ]),
         ),
       ),
     );

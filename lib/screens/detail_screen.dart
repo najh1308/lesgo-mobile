@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -28,6 +29,7 @@ class _DetailScreenState extends State<DetailScreen> {
   List<Review> _review = [];
   bool _loading = true;
   String? _error;
+  final _programKey = GlobalKey();
 
   @override
   void initState() {
@@ -124,126 +126,287 @@ class _DetailScreenState extends State<DetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detail Bimbel'),
-        actions: [
-          if (_d != null)
-            IconButton(
-              onPressed: _favorit,
-              icon: Icon(_d!.isFavorit ? Icons.bookmark : Icons.bookmark_border,
-                  color: _d!.isFavorit ? AppColors.primary : AppColors.muted),
-            ),
-        ],
+    if (_loading || _error != null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail bimbel')),
+        body: _loading ? const Center(child: CircularProgressIndicator()) : ErrorView(message: _error!, onRetry: _muat),
+      );
+    }
+    final d = _d!;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        body: ListenableBuilder(listenable: AppSettings.i, builder: (c, _) => _isi(d)),
+        bottomNavigationBar: ListenableBuilder(listenable: AppSettings.i, builder: (c, _) => _cta(d)),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? ErrorView(message: _error!, onRetry: _muat)
-              : ListenableBuilder(listenable: AppSettings.i, builder: (c, _) => _isi(_d!)),
+    );
+  }
+
+  int? get _hargaTermurah {
+    final p = _d!.program;
+    if (p.isEmpty) return null;
+    return p.map((e) => e.hargaIdr).reduce((a, b) => a < b ? a : b);
+  }
+
+  void _pilihProgram() {
+    final d = _d!;
+    final bisa = d.program.where((p) => p.jadwal.isNotEmpty).toList();
+    if (bisa.length == 1) {
+      Navigator.pushNamed(context, '/daftar', arguments: DaftarArgs(d, bisa.first));
+      return;
+    }
+    final ctx = _programKey.currentContext;
+    if (ctx != null) {
+      Scrollable.ensureVisible(ctx, duration: const Duration(milliseconds: 350), curve: Curves.easeOut);
+    }
+  }
+
+  Widget _cta(BimbelDetail d) {
+    final h = _hargaTermurah;
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppColors.line)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 12, 18, 12),
+          child: Row(children: [
+            Expanded(
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('Mulai dari', style: TextStyle(fontSize: 11.5, color: AppColors.muted)),
+                Text.rich(
+                  TextSpan(children: [
+                    TextSpan(
+                      text: h == null ? '-' : Fmt.harga(h),
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.indigo),
+                    ),
+                    const TextSpan(text: ' /bulan', style: TextStyle(fontSize: 11.5, color: AppColors.muted)),
+                  ]),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ]),
+            ),
+            SizedBox(
+              width: 170,
+              child: PrimaryButton(
+                label: 'Pilih program',
+                onPressed: d.program.any((p) => p.jadwal.isNotEmpty) ? _pilihProgram : null,
+              ),
+            ),
+          ]),
+        ),
+      ),
     );
   }
 
   Widget _isi(BimbelDetail d) {
-    return ListView(padding: const EdgeInsets.fromLTRB(20, 4, 20, 28), children: [
-      Container(
-        height: 120,
-        decoration: BoxDecoration(
-          color: AppColors.primary.withAlpha(20),
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: const Center(child: Icon(Icons.school_rounded, size: 64, color: AppColors.primary)),
-      ),
-      const SizedBox(height: 14),
-      Text(d.nama, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.ink)),
-      const SizedBox(height: 6),
-      Wrap(spacing: 12, crossAxisAlignment: WrapCrossAlignment.center, children: [
-        Row(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.star_rounded, color: AppColors.accent, size: 20),
-          Text(' ${Fmt.rating(d.rating)} (${d.jumlahReview} review)'),
+    final top = MediaQuery.paddingOf(context).top;
+    final modeSet = {for (final p in d.program) p.mode};
+    final modeLabel = modeSet.length > 1
+        ? 'Hybrid'
+        : modeSet.isEmpty
+            ? '-'
+            : (modeSet.first == 'online' ? 'Online' : 'Offline');
+    return ListView(padding: EdgeInsets.zero, children: [
+      SizedBox(
+        height: 250 + top,
+        child: Stack(fit: StackFit.expand, children: [
+          BimbelCover(seed: d.id, fotoUrl: d.foto, iconSize: 72, avatar: true),
+          Positioned(
+            left: 16,
+            top: top + 10,
+            child: _TombolBulat(Icons.arrow_back_rounded, () => Navigator.maybePop(context)),
+          ),
+          Positioned(
+            right: 16,
+            top: top + 10,
+            child: _TombolBulat(
+              d.isFavorit ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              _favorit,
+              warna: d.isFavorit ? AppColors.danger : AppColors.ink,
+            ),
+          ),
         ]),
-        if (d.jarakKm != null)
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            const Icon(Icons.location_on, color: AppColors.muted, size: 18),
-            Text(Fmt.jarak(d.jarakKm)),
-          ]),
-      ]),
-      const SizedBox(height: 12),
-      Text(d.deskripsi, style: const TextStyle(color: AppColors.muted, height: 1.4)),
-      const SizedBox(height: 14),
-      _Info(Icons.place_outlined, '${d.alamat}, ${d.kota}'),
-      _Info(Icons.access_time, d.jamBuka),
-      _Info(Icons.phone_outlined, d.kontak),
-      const SizedBox(height: 10),
-      ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: SizedBox(
-          height: 170,
-          child: BimbelMap(
-            items: [
-              Bimbel(
-                id: d.id, nama: d.nama, alamat: d.alamat, kota: d.kota, lat: d.lat, lng: d.lng,
-                rating: d.rating, hargaMulai: 0, jenjang: const [], mode: const [], mapel: '',
-              )
-            ],
-            center: LatLng(d.lat, d.lng),
-            zoom: 15,
-            interactive: false,
+      ),
+      Transform.translate(
+        offset: const Offset(0, -22),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: AppColors.bg,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
+          padding: const EdgeInsets.fromLTRB(18, 20, 18, 8),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  if (d.kota.isNotEmpty) Pill(d.kota),
+                  const SizedBox(height: 8),
+                  Text(d.nama,
+                      style: const TextStyle(
+                          fontSize: 23, fontWeight: FontWeight.w800, letterSpacing: -0.6, color: AppColors.ink)),
+                  const SizedBox(height: 5),
+                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const Padding(
+                      padding: EdgeInsets.only(top: 1),
+                      child: Icon(Icons.location_on_outlined, size: 16, color: AppColors.muted),
+                    ),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(d.alamat, style: const TextStyle(fontSize: 12.5, color: AppColors.muted)),
+                    ),
+                  ]),
+                ]),
+              ),
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(color: AppColors.softCoral, borderRadius: BorderRadius.circular(12)),
+                child: Column(children: [
+                  RatingText(Fmt.rating(d.rating), size: 16),
+                  const SizedBox(height: 2),
+                  Text('${d.jumlahReview} ulasan', style: const TextStyle(fontSize: 10.5, color: AppColors.muted)),
+                ]),
+              ),
+            ]),
+            const SizedBox(height: 16),
+            Row(children: [
+              _InfoCepat(Icons.route_outlined, d.jarakKm == null ? '-' : Fmt.jarak(d.jarakKm), 'dari lokasimu'),
+              const SizedBox(width: 9),
+              _InfoCepat(Icons.schedule_rounded, 'Jam buka', d.jamBuka.isEmpty ? '-' : d.jamBuka),
+              const SizedBox(width: 9),
+              _InfoCepat(Icons.menu_book_outlined, modeLabel, '${d.program.length} program'),
+            ]),
+            const SizedBox(height: 24),
+            const SectionTitle('Tentang bimbel'),
+            const SizedBox(height: 8),
+            Text(d.deskripsi, style: const TextStyle(color: AppColors.muted, height: 1.55, fontSize: 13.5)),
+            const SizedBox(height: 12),
+            if (d.kontak.trim().isNotEmpty) _Kontak(d.kontak),
+            const SizedBox(height: 18),
+            SectionTitle('Lokasi & arah', action: 'Lihat rute', onAction: _rute),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: SizedBox(
+                height: 170,
+                child: BimbelMap(
+                  items: [
+                    Bimbel(
+                      id: d.id, nama: d.nama, alamat: d.alamat, kota: d.kota, lat: d.lat, lng: d.lng,
+                      rating: d.rating, hargaMulai: 0, jenjang: const [], mode: const [], mapel: '',
+                    )
+                  ],
+                  center: LatLng(d.lat, d.lng),
+                  zoom: 15,
+                  interactive: false,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            KompasBimbel(lat: d.lat, lng: d.lng),
+            const SizedBox(height: 24),
+            SectionTitle('Program tersedia', key: _programKey),
+            const SizedBox(height: 12),
+            if (d.program.isEmpty) const EmptyView(icon: Icons.menu_book_outlined, text: 'Belum ada program'),
+            for (var i = 0; i < d.program.length; i++) _ProgramCard(detail: d, program: d.program[i], unggulan: i == 0),
+            const SizedBox(height: 10),
+            SectionTitle('Ulasan', action: 'Tulis ulasan', onAction: _tulisReview),
+            const SizedBox(height: 12),
+            if (_review.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 8),
+                child: Text('Belum ada ulasan.', style: TextStyle(color: AppColors.muted)),
+              ),
+            for (final r in _review.take(5))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Panel(
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    CircleAvatar(
+                      radius: 17,
+                      backgroundColor: AppColors.softBlue,
+                      child: Text(r.nama.isEmpty ? '?' : r.nama[0].toUpperCase(),
+                          style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.indigo)),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Row(children: [
+                          Expanded(child: Text(r.nama, style: const TextStyle(fontWeight: FontWeight.w700))),
+                          RatingText('${r.rating}', size: 12.5),
+                        ]),
+                        if (r.komentar.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(r.komentar, style: const TextStyle(color: AppColors.muted, fontSize: 13, height: 1.45)),
+                        ],
+                      ]),
+                    ),
+                  ]),
+                ),
+              ),
+          ]),
         ),
       ),
-      const SizedBox(height: 10),
-      OutlinedButton.icon(onPressed: _rute, icon: const Icon(Icons.directions), label: const Text('Lihat Rute')),
-      const SizedBox(height: 12),
-      KompasBimbel(lat: d.lat, lng: d.lng),
-      const SizedBox(height: 22),
-      const SectionTitle('Program'),
-      const SizedBox(height: 8),
-      if (d.program.isEmpty) const EmptyView(icon: Icons.menu_book_outlined, text: 'Belum ada program'),
-      for (final p in d.program) _ProgramCard(detail: d, program: p),
-      const SizedBox(height: 14),
-      SectionTitle('Review', trailing: TextButton(onPressed: _tulisReview, child: const Text('Tulis review'))),
-      if (_review.isEmpty)
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
-          child: Text('Belum ada review.', style: TextStyle(color: AppColors.muted)),
-        ),
-      for (final r in _review.take(5))
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Panel(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Expanded(child: Text(r.nama, style: const TextStyle(fontWeight: FontWeight.w700))),
-                const Icon(Icons.star_rounded, color: AppColors.accent, size: 18),
-                Text(' ${r.rating}'),
-              ]),
-              if (r.komentar.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(r.komentar, style: const TextStyle(color: AppColors.muted)),
-              ],
-            ]),
-          ),
-        ),
     ]);
   }
 }
 
-class _Info extends StatelessWidget {
+class _TombolBulat extends StatelessWidget {
   final IconData icon;
-  final String teks;
-  const _Info(this.icon, this.teks);
+  final VoidCallback onTap;
+  final Color warna;
+  const _TombolBulat(this.icon, this.onTap, {this.warna = AppColors.ink});
 
   @override
   Widget build(BuildContext context) {
-    if (teks.trim().isEmpty) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Icon(icon, size: 18, color: AppColors.muted),
-        const SizedBox(width: 8),
-        Expanded(child: Text(teks)),
-      ]),
+    return Material(
+      color: Colors.white,
+      shape: const CircleBorder(),
+      elevation: 2,
+      shadowColor: Colors.black26,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: SizedBox(width: 42, height: 42, child: Icon(icon, size: 21, color: warna)),
+      ),
+    );
+  }
+}
+
+class _InfoCepat extends StatelessWidget {
+  final IconData icon;
+  final String judul, sub;
+  const _InfoCepat(this.icon, this.judul, this.sub);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.line),
+        ),
+        child: Column(children: [
+          Icon(icon, size: 21, color: AppColors.teal),
+          const SizedBox(height: 5),
+          Text(judul,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+          const SizedBox(height: 1),
+          Text(sub,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 10.5, color: AppColors.muted)),
+        ]),
+      ),
     );
   }
 }
@@ -251,49 +414,122 @@ class _Info extends StatelessWidget {
 class _ProgramCard extends StatelessWidget {
   final BimbelDetail detail;
   final Program program;
-  const _ProgramCard({required this.detail, required this.program});
+  final bool unggulan;
+  const _ProgramCard({required this.detail, required this.program, this.unggulan = false});
 
   @override
   Widget build(BuildContext context) {
     final p = program;
     final zona = AppSettings.i.zona;
+    final sisa = p.jadwal.fold<int>(0, (t, j) => t + (j.sisa > 0 ? j.sisa : 0));
+    final bisa = p.jadwal.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Panel(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(p.nama, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 6),
-          Wrap(spacing: 6, runSpacing: 4, children: [
-            Pill(p.jenjang),
-            Pill(p.mode == 'online' ? 'Online' : 'Offline',
-                color: p.mode == 'online' ? AppColors.success : AppColors.accent),
-            Pill('${p.durasiMinggu} minggu', color: AppColors.muted),
-          ]),
-          const SizedBox(height: 6),
-          Text(p.mapel, style: const TextStyle(color: AppColors.muted)),
-          const SizedBox(height: 8),
-          for (final j in p.jadwal.take(2))
-            Text('${j.hari}, ${TimeUtil.rentang(j.tanggalMulai, j.jamMulai, j.jamSelesai, zona)}',
-                style: const TextStyle(fontSize: 12.5, color: AppColors.muted)),
-          const SizedBox(height: 10),
-          Row(children: [
-            Expanded(
-              child: Text('${Fmt.harga(p.hargaIdr)}/bulan',
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.primary)),
-            ),
-            SizedBox(
-              width: 140,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(42)),
-                onPressed: p.jadwal.isEmpty
-                    ? null
-                    : () => Navigator.pushNamed(context, '/daftar', arguments: DaftarArgs(detail, p)),
-                child: const Text('Pilih Program'),
-              ),
-            ),
-          ]),
-        ]),
+      child: Material(
+        color: unggulan ? AppColors.softTeal : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+          side: BorderSide(color: unggulan ? const Color(0xFFA8DCD5) : AppColors.line),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: bisa ? () => Navigator.pushNamed(context, '/daftar', arguments: DaftarArgs(detail, p)) : null,
+          child: Padding(
+            padding: const EdgeInsets.all(15),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Expanded(
+                  child: Eyebrow(
+                    '${p.jenjang} · ${p.mode == 'online' ? 'ONLINE' : 'OFFLINE'} · ${p.durasiMinggu} MINGGU'.toUpperCase(),
+                    color: AppColors.teal,
+                  ),
+                ),
+                if (bisa)
+                  Pill(sisa > 0 ? 'Sisa $sisa kursi' : 'Penuh',
+                      color: sisa > 0 ? AppColors.coralDark : AppColors.danger),
+              ]),
+              const SizedBox(height: 6),
+              Text(p.nama, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+              if (p.mapel.isNotEmpty) ...[
+                const SizedBox(height: 3),
+                Text(p.mapel, style: const TextStyle(fontSize: 12.5, color: AppColors.muted)),
+              ],
+              const SizedBox(height: 8),
+              for (final j in p.jadwal.take(2))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 2),
+                  child: Row(children: [
+                    const Icon(Icons.schedule_rounded, size: 14, color: AppColors.muted),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text('${j.hari}, ${TimeUtil.rentang(j.tanggalMulai, j.jamMulai, j.jamSelesai, zona)}',
+                          style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+                    ),
+                  ]),
+                ),
+              const SizedBox(height: 10),
+              Row(children: [
+                Text(Fmt.harga(p.hargaIdr),
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: AppColors.indigo)),
+                const Text(' / bulan', style: TextStyle(fontSize: 11.5, color: AppColors.muted)),
+                const Spacer(),
+                Text(bisa ? 'Pilih' : 'Belum ada jadwal',
+                    style: TextStyle(
+                        fontSize: 12.5, fontWeight: FontWeight.w800, color: bisa ? AppColors.teal : AppColors.muted)),
+                if (bisa) const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.teal),
+              ]),
+            ]),
+          ),
+        ),
       ),
+    );
+  }
+}
+
+/// Nomor HP bimbel dengan tombol Telepon dan WhatsApp.
+class _Kontak extends StatelessWidget {
+  final String nomor;
+  const _Kontak(this.nomor);
+
+  /// '0812-5550-0101' -> '081255500101'
+  String get _angka => nomor.replaceAll(RegExp(r'[^0-9+]'), '');
+
+  /// Format internasional untuk WhatsApp: 0812... -> 62812...
+  String get _wa {
+    final a = _angka.replaceFirst('+', '');
+    return a.startsWith('0') ? '62${a.substring(1)}' : a;
+  }
+
+  Future<void> _buka(BuildContext context, Uri uri) async {
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && context.mounted) showMsg(context, 'Tidak dapat membuka aplikasi', error: true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Panel(
+      shadow: false,
+      padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+      child: Row(children: [
+        const IconBox(Icons.phone_outlined, size: 36, bg: AppColors.softTeal, fg: AppColors.teal),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Kontak bimbel', style: TextStyle(fontSize: 11.5, color: AppColors.muted)),
+            Text(nomor, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800)),
+          ]),
+        ),
+        IconButton(
+          tooltip: 'Telepon',
+          onPressed: () => _buka(context, Uri(scheme: 'tel', path: _angka)),
+          icon: const Icon(Icons.call_rounded, color: AppColors.indigo),
+        ),
+        IconButton(
+          tooltip: 'WhatsApp',
+          onPressed: () => _buka(context, Uri.parse('https://wa.me/$_wa')),
+          icon: const Icon(Icons.chat_rounded, color: AppColors.teal),
+        ),
+      ]),
     );
   }
 }

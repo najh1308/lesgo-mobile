@@ -4,6 +4,11 @@ import 'package:flutter/widgets.dart';
 
 double _d(dynamic v) => v == null ? 0 : (v as num).toDouble();
 int _i(dynamic v) => v == null ? 0 : (v as num).toInt();
+/// Hanya URL http(s) yang dipakai sebagai gambar online.
+String? _url(dynamic v) {
+  final t = v?.toString().trim() ?? '';
+  return t.startsWith('http://') || t.startsWith('https://') ? t : null;
+}
 List<String> _list(dynamic v) =>
     v == null ? <String>[] : (v as List).map((e) => e.toString()).toList();
 
@@ -106,6 +111,7 @@ class Bimbel {
   final double lat, lng, rating;
   final double? jarakKm;
   final List<String> jenjang, mode;
+  final String? foto; // URL gambar profil (opsional), dari kolom bimbel.foto
   bool isFavorit;
   Bimbel({
     required this.id,
@@ -120,6 +126,7 @@ class Bimbel {
     required this.mode,
     required this.mapel,
     this.jarakKm,
+    this.foto,
     this.isFavorit = false,
   });
   factory Bimbel.fromJson(Map<String, dynamic> j) => Bimbel(
@@ -135,6 +142,7 @@ class Bimbel {
         mode: _list(j['mode']),
         mapel: j['mapel'] ?? '',
         jarakKm: j['jarak_km'] == null ? null : _d(j['jarak_km']),
+        foto: _url(j['foto']),
         isFavorit: j['is_favorit'] == true,
       );
 }
@@ -146,6 +154,7 @@ class BimbelDetail {
   final double? jarakKm;
   bool isFavorit;
   final List<Program> program;
+  final String? foto;
   BimbelDetail({
     required this.id,
     required this.nama,
@@ -161,6 +170,7 @@ class BimbelDetail {
     required this.isFavorit,
     required this.program,
     this.jarakKm,
+    this.foto,
   });
   factory BimbelDetail.fromJson(Map<String, dynamic> j) => BimbelDetail(
         id: _i(j['id']),
@@ -175,6 +185,7 @@ class BimbelDetail {
         rating: _d(j['rating_avg']),
         jumlahReview: _i(j['jumlah_review']),
         jarakKm: j['jarak_km'] == null ? null : _d(j['jarak_km']),
+        foto: _url(j['foto']),
         isFavorit: j['is_favorit'] == true,
         program: ((j['program'] ?? []) as List)
             .map((e) => Program.fromJson(Map<String, dynamic>.from(e)))

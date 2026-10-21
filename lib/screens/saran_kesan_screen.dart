@@ -62,10 +62,29 @@ class _SaranKesanScreenState extends State<SaranKesanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Saran dan Kesan')),
+      appBar: AppBar(title: const Text('Saran & kesan')),
       body: ListView(padding: const EdgeInsets.fromLTRB(20, 4, 20, 28), children: [
-        const Text('Mata kuliah Pemrograman Aplikasi Mobile', style: TextStyle(color: AppColors.muted)),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: AppColors.indigo, borderRadius: BorderRadius.circular(18)),
+          child: const Row(children: [
+            IconBox(Icons.rate_review_outlined, bg: Colors.white, fg: AppColors.indigo, size: 44),
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Eyebrow('MATA KULIAH'),
+                SizedBox(height: 3),
+                Text('Pemrograman Aplikasi Mobile',
+                    style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w800, color: Colors.white)),
+                SizedBox(height: 2),
+                Text('Ceritakan saran dan kesanmu selama perkuliahan.',
+                    style: TextStyle(fontSize: 12, color: Color(0xFFB9CAD9))),
+              ]),
+            ),
+          ]),
+        ),
+        const SizedBox(height: 20),
         const Text('Saran', style: TextStyle(fontWeight: FontWeight.w700)),
         const SizedBox(height: 6),
         AppField(controller: _saran, hint: 'Tulis saranmu', icon: Icons.lightbulb_outline, maxLines: 4),

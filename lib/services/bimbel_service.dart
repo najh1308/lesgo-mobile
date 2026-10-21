@@ -25,16 +25,16 @@ class BimbelService {
     String? cacheKey,
   }) async {
     final params = <String, dynamic>{
-      if (lat != null) 'p_lat': lat,
-      if (lng != null) 'p_lng': lng,
+      'p_lat': ?lat,
+      'p_lng': ?lng,
       if (q != null && q.isNotEmpty) 'p_q': q,
-      if (jenjang != null) 'p_jenjang': jenjang,
-      if (mapel != null) 'p_mapel': mapel,
-      if (mode != null) 'p_mode': mode,
-      if (hargaMax != null) 'p_harga_max': hargaMax,
-      if (ratingMin != null) 'p_rating_min': ratingMin,
-      if (radius != null) 'p_radius': radius,
-      if (sort != null) 'p_sort': sort,
+      'p_jenjang': ?jenjang,
+      'p_mapel': ?mapel,
+      'p_mode': ?mode,
+      'p_harga_max': ?hargaMax,
+      'p_rating_min': ?ratingMin,
+      'p_radius': ?radius,
+      'p_sort': ?sort,
       'p_per_page': perPage,
     };
     try {
@@ -54,8 +54,8 @@ class BimbelService {
   static Future<BimbelDetail> detail(int id, {double? lat, double? lng}) async {
     final data = await ApiClient.rpcAuth('api_bimbel_detail', {
       'p_id': id,
-      if (lat != null) 'p_lat': lat,
-      if (lng != null) 'p_lng': lng,
+      'p_lat': ?lat,
+      'p_lng': ?lng,
     });
     return BimbelDetail.fromJson(Map<String, dynamic>.from(data));
   }

@@ -432,7 +432,7 @@ declare
   v_items jsonb;
 begin
   with dasar as (
-    select b.id, b.nama, b.alamat, b.kota, b.latitude, b.longitude, b.rating_avg,
+    select b.id, b.nama, b.alamat, b.kota, b.latitude, b.longitude, b.rating_avg, b.foto,
            min(p.harga_idr) as harga_mulai,
            array_agg(distinct p.jenjang order by p.jenjang) as jenjang,
            mapel_bimbel(b.id) as mapel,
@@ -461,7 +461,7 @@ begin
       'id', id, 'nama', nama, 'alamat', alamat, 'kota', kota,
       'latitude', latitude, 'longitude', longitude, 'rating_avg', rating_avg,
       'harga_mulai', harga_mulai, 'jenjang', to_jsonb(jenjang), 'mapel', mapel, 'mode', to_jsonb(mode),
-      'jarak_km', round(jarak::numeric, 1), 'is_favorit', is_favorit) order by urutan), '[]'::jsonb)
+      'jarak_km', round(jarak::numeric, 1), 'is_favorit', is_favorit, 'foto', foto) order by urutan), '[]'::jsonb)
   into v_items from terurut where urutan <= v_limit;
   return jsonb_build_object('items', v_items, 'per_page', v_limit);
 end $$;
@@ -477,7 +477,7 @@ begin
   return jsonb_build_object(
     'id', b.id, 'nama', b.nama, 'alamat', b.alamat, 'kota', b.kota,
     'latitude', b.latitude, 'longitude', b.longitude, 'deskripsi', b.deskripsi,
-    'kontak', b.kontak, 'jam_buka', b.jam_buka, 'rating_avg', b.rating_avg,
+    'kontak', b.kontak, 'jam_buka', b.jam_buka, 'rating_avg', b.rating_avg, 'foto', b.foto,
     'jumlah_review', (select count(*) from review r where r.bimbel_id = b.id),
     'jarak_km', case when p_lat is not null and p_lng is not null
                      then round(jarak_km(p_lat, p_lng, b.latitude::float8, b.longitude::float8)::numeric, 1) end,
@@ -526,7 +526,7 @@ begin
           'latitude', b.latitude, 'longitude', b.longitude, 'rating_avg', b.rating_avg,
           'harga_mulai', min(p.harga_idr),
           'jenjang', to_jsonb(array_agg(distinct p.jenjang order by p.jenjang)),
-          'mapel', mapel_bimbel(b.id),
+          'mapel', mapel_bimbel(b.id), 'foto', b.foto,
           'is_favorit', true) as j
       from favorit f join bimbel b on b.id = f.bimbel_id join program p on p.bimbel_id = b.id
       where f.user_id = u.id

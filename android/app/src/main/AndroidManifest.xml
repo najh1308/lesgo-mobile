@@ -12,7 +12,7 @@
 
     <!-- Semua koneksi memakai https (Supabase, Gemini, Frankfurter, OpenStreetMap). -->
     <application
-        android:label="LesGo"
+        android:label="GeoLearn"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -60,6 +60,15 @@
         <intent>
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="https"/>
+        </intent>
+        <!-- Agar tombol Telepon di detail bimbel bisa membuka aplikasi telepon. -->
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="tel"/>
         </intent>
     </queries>
 </manifest>

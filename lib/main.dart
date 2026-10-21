@@ -24,16 +24,16 @@ Future<void> main() async {
   await ApiClient.init(); // Supabase: database online
   await NotifikasiService.init();
   await AppSettings.i.muatLokal(); // mata uang & zona dari Hive
-  runApp(const LesGoApp());
+  runApp(const GeoLearnApp());
 }
 
-class LesGoApp extends StatelessWidget {
-  const LesGoApp({super.key});
+class GeoLearnApp extends StatelessWidget {
+  const GeoLearnApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'LesGo',
+      title: 'GeoLearn',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
       navigatorKey: navigatorKey,

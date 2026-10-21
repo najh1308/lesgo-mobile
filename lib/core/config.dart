@@ -12,10 +12,10 @@ class Config {
 
   static bool get sudahDiisi => !supabaseUrl.contains('ISI-PROJECT') && !supabaseKey.startsWith('ISI_');
 
-  /// Lokasi cadangan jika izin lokasi ditolak (Jakarta Selatan, sesuai desain).
-  static const double defaultLat = -6.2263;
-  static const double defaultLng = 106.8546;
-  static const String defaultLokasiLabel = 'Jakarta Selatan';
+  /// Lokasi cadangan jika izin lokasi ditolak (Tugu Yogyakarta).
+  static const double defaultLat = -7.7829;
+  static const double defaultLng = 110.3671;
+  static const String defaultLokasiLabel = 'Yogyakarta';
 
   /// Wajib diisi untuk tile OpenStreetMap.
   static const String mapUserAgent = 'com.example.lesgo';

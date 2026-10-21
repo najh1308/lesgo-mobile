@@ -67,15 +67,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: Colors.white,
+      appBar: AppBar(shape: const Border()),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            const Text('Buat Akun Baru',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.ink)),
+            const Align(alignment: Alignment.centerLeft, child: Brand()),
+            const SizedBox(height: 22),
+            const Text('Buat akun baru',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.8, color: AppColors.ink)),
             const SizedBox(height: 6),
-            const Text('Daftar untuk mulai menemukan bimbel terbaik untukmu.',
+            const Text('Daftar untuk mulai menemukan bimbel terbaik di sekitarmu.',
                 style: TextStyle(color: AppColors.muted)),
             const SizedBox(height: 24),
             AppField(controller: _nama, hint: 'Nama', icon: Icons.person_outline, errorText: _err['nama']),
@@ -111,11 +114,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             PrimaryButton(label: 'Daftar', onPressed: _daftar, loading: _loading),
             const SizedBox(height: 16),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Text('Sudah punya akun? '),
+              const Text('Sudah punya akun? ', style: TextStyle(color: AppColors.muted)),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: const Text('Login di sini',
-                    style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
+                child: const Text('Masuk di sini',
+                    style: TextStyle(color: AppColors.teal, fontWeight: FontWeight.w800)),
               ),
             ]),
           ]),

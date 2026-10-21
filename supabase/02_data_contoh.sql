@@ -11,22 +11,22 @@ INSERT INTO users (id, nama, email, password_hash, no_hp) VALUES
 (3, 'Fajar Nugroho', 'fajar@lesgo.test', '$2a$10$RkcfVx8pb5D0XxEHOZIPx.KBWJlz.qwp8I3cgVCTjCfy.lWWEWmq2', '081234567803');
 
 INSERT INTO bimbel (id, nama, alamat, kota, latitude, longitude, deskripsi, kontak, jam_buka, foto, rating_avg) VALUES
-(1, 'Bimbel Cerdas Nusantara', 'Jl. Tebet Raya No. 12', 'Jakarta Selatan', -6.2263, 106.8546, 'Bimbel untuk SD sampai SMA dengan kelas kelompok kecil dan tutor berpengalaman.', '021-5550101', 'Senin-Sabtu 08.00-20.00', NULL, 4.7),
-(2, 'Ruang Pintar Tebet', 'Jl. Tebet Barat Dalam No. 7', 'Jakarta Selatan', -6.2342, 106.8398, 'Ruang belajar nyaman dengan pendampingan pekerjaan rumah dan persiapan ujian.', '021-5550102', 'Senin-Jumat 09.00-19.00', NULL, 4.7),
-(3, 'Bimbel Prestasi', 'Jl. Kemang Selatan No. 21', 'Jakarta Selatan', -6.275, 106.816, 'Fokus pada sains: Matematika, Fisika, dan Kimia untuk SMA dan UTBK.', '021-5550103', 'Senin-Sabtu 08.00-21.00', NULL, 4.7),
-(4, 'Cahaya Edukasi', 'Jl. Fatmawati Raya No. 88', 'Jakarta Selatan', -6.292, 106.797, 'Kelas online dan offline dengan jadwal fleksibel untuk siswa sibuk.', '021-5550104', 'Senin-Sabtu 10.00-20.00', NULL, 4.7),
-(5, 'Generasi Cerdas', 'Jl. Pasar Minggu No. 45', 'Jakarta Selatan', -6.284, 106.845, 'Bimbel sore hari dengan kelas berbasis proyek dan latihan soal rutin.', '021-5550105', 'Senin-Jumat 13.00-21.00', NULL, 4.0),
-(6, 'Primagama Cabang Cilandak', 'Jl. Cilandak KKO No. 3', 'Jakarta Selatan', -6.29, 106.803, 'Program lengkap dari SD hingga persiapan masuk perguruan tinggi.', '021-5550106', 'Senin-Sabtu 08.00-20.00', NULL, 5.0),
-(7, 'Kampus Belajar Mampang', 'Jl. Mampang Prapatan No. 19', 'Jakarta Selatan', -6.248, 106.823, 'Tutor mahasiswa berprestasi dengan harga ramah untuk pelajar.', '021-5550107', 'Senin-Sabtu 09.00-20.00', NULL, 4.3),
-(8, 'Bimbel Tunas Bangsa', 'Jl. Pondok Indah No. 10', 'Jakarta Selatan', -6.265, 106.783, 'Pendampingan belajar SD dan SMP dengan laporan perkembangan bulanan.', '021-5550108', 'Senin-Sabtu 08.00-19.00', NULL, 4.3),
-(9, 'Bimbel Gejayan Cerdas', 'Jl. Gejayan No. 21, Condongcatur', 'Yogyakarta', -7.7719, 110.3898, 'Bimbel dekat kampus dengan tutor mahasiswa dan kelas kelompok kecil.', '0274-550201', 'Senin-Sabtu 08.00-20.00', NULL, 4.7),
-(10, 'Ruang Belajar Condongcatur', 'Jl. Anggajaya No. 5, Condongcatur', 'Yogyakarta', -7.7612, 110.4094, 'Kelas sore untuk siswa SD sampai SMA di sekitar Condongcatur.', '0274-550202', 'Senin-Jumat 14.00-21.00', NULL, 3.7),
-(11, 'Malioboro Edu Center', 'Jl. Malioboro No. 60', 'Yogyakarta', -7.7926, 110.3657, 'Pusat belajar di tengah kota dengan banyak pilihan program dan kelas online.', '0274-550203', 'Senin-Sabtu 09.00-20.00', NULL, 4.3),
-(12, 'Kotagede Smart Course', 'Jl. Kemasan No. 14, Kotagede', 'Yogyakarta', -7.8277, 110.3984, 'Kelas kecil dengan suasana belajar tenang dan pendampingan intensif.', '0274-550204', 'Senin-Sabtu 10.00-19.00', NULL, 4.0),
-(13, 'Sinar Ilmu Sleman', 'Jl. Kaliurang Km 5 No. 33', 'Yogyakarta', -7.758, 110.378, 'Program persiapan ujian sekolah dan masuk perguruan tinggi.', '0274-550205', 'Senin-Sabtu 08.00-20.00', NULL, 5.0),
-(14, 'Jogja Pintar Online', 'Jl. Affandi No. 9, Caturtunggal', 'Yogyakarta', -7.783, 110.39, 'Seluruh kelas online dengan rekaman dan sesi tanya jawab.', '0274-550206', 'Setiap hari 08.00-22.00', NULL, 4.3),
-(15, 'Bimbel Umbulharjo', 'Jl. Veteran No. 77, Umbulharjo', 'Yogyakarta', -7.813, 110.385, 'Bimbel keluarga dengan harga terjangkau dan jadwal fleksibel.', '0274-550207', 'Senin-Sabtu 09.00-20.00', NULL, 4.7),
-(16, 'Pelita Ilmu Depok', 'Jl. Babarsari No. 18, Depok', 'Yogyakarta', -7.775, 110.415, 'Dekat beberapa kampus, cocok untuk persiapan UTBK dan SMA.', '0274-550208', 'Senin-Sabtu 10.00-21.00', NULL, 4.3);
+(1, 'Bimbel Cerdas Nusantara', 'Jl. Tebet Raya No. 12', 'Jakarta Selatan', -6.2263, 106.8546, 'Bimbel untuk SD sampai SMA dengan kelas kelompok kecil dan tutor berpengalaman.', '0812-5550-0101', 'Senin-Sabtu 08.00-20.00', NULL, 4.7),
+(2, 'Ruang Pintar Tebet', 'Jl. Tebet Barat Dalam No. 7', 'Jakarta Selatan', -6.2342, 106.8398, 'Ruang belajar nyaman dengan pendampingan pekerjaan rumah dan persiapan ujian.', '0812-5550-0102', 'Senin-Jumat 09.00-19.00', NULL, 4.7),
+(3, 'Bimbel Prestasi', 'Jl. Kemang Selatan No. 21', 'Jakarta Selatan', -6.275, 106.816, 'Fokus pada sains: Matematika, Fisika, dan Kimia untuk SMA dan UTBK.', '0812-5550-0103', 'Senin-Sabtu 08.00-21.00', NULL, 4.7),
+(4, 'Cahaya Edukasi', 'Jl. Fatmawati Raya No. 88', 'Jakarta Selatan', -6.292, 106.797, 'Kelas online dan offline dengan jadwal fleksibel untuk siswa sibuk.', '0812-5550-0104', 'Senin-Sabtu 10.00-20.00', NULL, 4.7),
+(5, 'Generasi Cerdas', 'Jl. Pasar Minggu No. 45', 'Jakarta Selatan', -6.284, 106.845, 'Bimbel sore hari dengan kelas berbasis proyek dan latihan soal rutin.', '0812-5550-0105', 'Senin-Jumat 13.00-21.00', NULL, 4.0),
+(6, 'Primagama Cabang Cilandak', 'Jl. Cilandak KKO No. 3', 'Jakarta Selatan', -6.29, 106.803, 'Program lengkap dari SD hingga persiapan masuk perguruan tinggi.', '0812-5550-0106', 'Senin-Sabtu 08.00-20.00', NULL, 5.0),
+(7, 'Kampus Belajar Mampang', 'Jl. Mampang Prapatan No. 19', 'Jakarta Selatan', -6.248, 106.823, 'Tutor mahasiswa berprestasi dengan harga ramah untuk pelajar.', '0812-5550-0107', 'Senin-Sabtu 09.00-20.00', NULL, 4.3),
+(8, 'Bimbel Tunas Bangsa', 'Jl. Pondok Indah No. 10', 'Jakarta Selatan', -6.265, 106.783, 'Pendampingan belajar SD dan SMP dengan laporan perkembangan bulanan.', '0812-5550-0108', 'Senin-Sabtu 08.00-19.00', NULL, 4.3),
+(9, 'Bimbel Gejayan Cerdas', 'Jl. Gejayan No. 21, Condongcatur', 'Yogyakarta', -7.7719, 110.3898, 'Bimbel dekat kampus dengan tutor mahasiswa dan kelas kelompok kecil.', '0813-5550-0201', 'Senin-Sabtu 08.00-20.00', NULL, 4.7),
+(10, 'Ruang Belajar Condongcatur', 'Jl. Anggajaya No. 5, Condongcatur', 'Yogyakarta', -7.7612, 110.4094, 'Kelas sore untuk siswa SD sampai SMA di sekitar Condongcatur.', '0813-5550-0202', 'Senin-Jumat 14.00-21.00', NULL, 3.7),
+(11, 'Malioboro Edu Center', 'Jl. Malioboro No. 60', 'Yogyakarta', -7.7926, 110.3657, 'Pusat belajar di tengah kota dengan banyak pilihan program dan kelas online.', '0813-5550-0203', 'Senin-Sabtu 09.00-20.00', NULL, 4.3),
+(12, 'Kotagede Smart Course', 'Jl. Kemasan No. 14, Kotagede', 'Yogyakarta', -7.8277, 110.3984, 'Kelas kecil dengan suasana belajar tenang dan pendampingan intensif.', '0813-5550-0204', 'Senin-Sabtu 10.00-19.00', NULL, 4.0),
+(13, 'Sinar Ilmu Sleman', 'Jl. Kaliurang Km 5 No. 33', 'Yogyakarta', -7.758, 110.378, 'Program persiapan ujian sekolah dan masuk perguruan tinggi.', '0813-5550-0205', 'Senin-Sabtu 08.00-20.00', NULL, 5.0),
+(14, 'Jogja Pintar Online', 'Jl. Affandi No. 9, Caturtunggal', 'Yogyakarta', -7.783, 110.39, 'Seluruh kelas online dengan rekaman dan sesi tanya jawab.', '0813-5550-0206', 'Setiap hari 08.00-22.00', NULL, 4.3),
+(15, 'Bimbel Umbulharjo', 'Jl. Veteran No. 77, Umbulharjo', 'Yogyakarta', -7.813, 110.385, 'Bimbel keluarga dengan harga terjangkau dan jadwal fleksibel.', '0813-5550-0207', 'Senin-Sabtu 09.00-20.00', NULL, 4.7),
+(16, 'Pelita Ilmu Depok', 'Jl. Babarsari No. 18, Depok', 'Yogyakarta', -7.775, 110.415, 'Dekat beberapa kampus, cocok untuk persiapan UTBK dan SMA.', '0813-5550-0208', 'Senin-Sabtu 10.00-21.00', NULL, 4.3);
 
 INSERT INTO program (id, bimbel_id, nama_program, jenjang, mapel, mode, harga_idr, durasi_minggu, deskripsi) VALUES
 (1, 1, 'Matematika Dasar SD', 'SD', 'Matematika', 'offline', 350000, 4, 'Program Matematika Dasar SD di Bimbel Cerdas Nusantara.'),

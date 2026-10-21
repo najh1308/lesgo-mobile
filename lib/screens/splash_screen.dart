@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../core/api_client.dart';
 import '../core/session.dart';
@@ -37,10 +38,15 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacementNamed(context, '/welcome');
       return;
     }
+    if (await Session.terkunci()) {
+      // Sudah "keluar" dengan login sidik jari aktif: masuk lagi lewat halaman login.
+      if (mounted) Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
     try {
       await AuthService.me(); // memastikan token masih berlaku
       if (await Session.biometrikAktif() && await BiometricService.tersedia()) {
-        final ok = await BiometricService.verifikasi('Verifikasi untuk masuk ke LesGo');
+        final ok = await BiometricService.verifikasi('Tempelkan sidik jari untuk masuk ke GeoLearn');
         if (!mounted) return;
         if (!ok) {
           Navigator.pushReplacementNamed(context, '/login');
@@ -61,16 +67,26 @@ class _SplashScreenState extends State<SplashScreen> {
     if (_error != null) {
       return Scaffold(body: ErrorView(message: _error!, onRetry: _mulai));
     }
-    return const Scaffold(
-      body: Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(Icons.location_on, size: 72, color: AppColors.accent),
-          SizedBox(height: 8),
-          Text('LesGo',
-              style: TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: AppColors.primary)),
-          SizedBox(height: 24),
-          CircularProgressIndicator(),
-        ]),
+    return const AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: AppColors.indigo,
+        body: Center(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            BrandMark(light: true, size: 84),
+            SizedBox(height: 18),
+            Text('GeoLearn',
+                style: TextStyle(fontSize: 38, fontWeight: FontWeight.w800, letterSpacing: -1, color: Colors.white)),
+            SizedBox(height: 6),
+            Text('Belajar lebih dekat', style: TextStyle(fontSize: 15, color: Color(0xFFB9CAD9))),
+            SizedBox(height: 36),
+            SizedBox(
+              width: 26,
+              height: 26,
+              child: CircularProgressIndicator(strokeWidth: 2.6, color: AppColors.teal),
+            ),
+          ]),
+        ),
       ),
     );
   }

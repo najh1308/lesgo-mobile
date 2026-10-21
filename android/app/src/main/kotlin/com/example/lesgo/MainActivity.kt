@@ -1,5 +1,6 @@
 package com.example.lesgo
 
-import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.android.FlutterFragmentActivity
 
-class MainActivity : FlutterActivity()
+// local_auth (login sidik jari) membutuhkan FragmentActivity.
+class MainActivity : FlutterFragmentActivity()

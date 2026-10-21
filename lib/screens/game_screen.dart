@@ -39,6 +39,7 @@ class _GameScreenState extends State<GameScreen> {
   StreamSubscription<AccelerometerEvent>? _sensor;
 
   int _sisa = _durasi, _skor = 0, _benar = 0, _salah = 0, _beruntun = 0;
+  int _nomorSoal = 0; // menentukan warna latar tiap soal
   _Soal _soal = const _Soal('', true);
   Color? _kilat; // warna kilasan setelah menjawab
 
@@ -144,6 +145,7 @@ class _GameScreenState extends State<GameScreen> {
       _papanError = null;
       _siapMiring = true;
       _soal = _buatSoal();
+      _nomorSoal++;
     });
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       if (_sisa <= 1) {
@@ -199,6 +201,7 @@ class _GameScreenState extends State<GameScreen> {
         _kilat = AppColors.danger;
       }
       _soal = _buatSoal();
+      _nomorSoal++;
     });
     Future.delayed(const Duration(milliseconds: 250), () {
       if (mounted) setState(() => _kilat = null);
@@ -227,156 +230,314 @@ class _GameScreenState extends State<GameScreen> {
 
   // ---------- Tampilan ----------
 
+  static const _gelap = AppColors.slate;
+
+  /// Warna latar yang bergantian setiap soal baru. Semua cukup gelap
+  /// agar teks putih tetap mudah dibaca.
+  static const _warnaSoal = [
+    Color(0xFF1D2A44), // slate
+    Color(0xFF0F4C81), // indigo
+    Color(0xFF0B5E57), // teal tua
+    Color(0xFF4A2D6B), // ungu
+    Color(0xFF7A3B1D), // oranye bata
+    Color(0xFF16506E), // biru laut
+    Color(0xFF6B2340), // merah marun
+    Color(0xFF2F5130), // hijau daun
+  ];
+
+  Color get _latar => _fase == _Fase.main ? _warnaSoal[_nomorSoal % _warnaSoal.length] : _gelap;
+  static const _redup = Color(0xFF98A5B6);
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Hitung Cepat')),
-      body: SafeArea(
-        child: switch (_fase) {
-          _Fase.awal => _layarAwal(),
-          _Fase.main => _layarMain(),
-          _Fase.selesai => _layarSelesai(),
-        },
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: _gelap,
+        body: AnimatedContainer(
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOut,
+          color: _latar,
+          child: SafeArea(
+          child: Column(children: [
+            _kepala(),
+            Expanded(
+              child: switch (_fase) {
+                _Fase.awal => _layarAwal(),
+                _Fase.main => _layarMain(),
+                _Fase.selesai => _layarSelesai(),
+              },
+            ),
+          ]),
+          ),
+        ),
       ),
     );
   }
 
+  /// Baris atas: tombol tutup, level + progres waktu, dan skor terbaik.
+  Widget _kepala() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(15, 12, 15, 8),
+      child: Row(children: [
+        Material(
+          color: Colors.white.withAlpha(20),
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => Navigator.maybePop(context),
+            child: const SizedBox(width: 40, height: 40, child: Icon(Icons.close_rounded, color: Colors.white)),
+          ),
+        ),
+        const SizedBox(width: 15),
+        Expanded(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(_fase == _Fase.awal ? 'HITUNG CEPAT' : 'LEVEL $_level',
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.coral)),
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: LinearProgressIndicator(
+                value: _fase == _Fase.main ? _sisa / _durasi : (_fase == _Fase.awal ? 1 : 0),
+                minHeight: 5,
+                color: _sisa <= 10 && _fase == _Fase.main ? AppColors.coral : AppColors.teal,
+                backgroundColor: Colors.white.withAlpha(26),
+              ),
+            ),
+          ]),
+        ),
+        const SizedBox(width: 15),
+        Row(children: [
+          const Icon(Icons.emoji_events_rounded, size: 16, color: AppColors.coral),
+          const SizedBox(width: 3),
+          Text('$_terbaik', style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white)),
+        ]),
+      ]),
+    );
+  }
+
+  Widget _kartuGelap({required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(13),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withAlpha(20)),
+      ),
+      child: child,
+    );
+  }
+
   Widget _layarAwal() {
-    return ListView(padding: const EdgeInsets.all(24), children: [
-      const Icon(Icons.calculate_rounded, size: 84, color: AppColors.accent),
-      const SizedBox(height: 12),
+    return ListView(padding: const EdgeInsets.fromLTRB(24, 20, 24, 24), children: [
+      Center(
+        child: SizedBox(
+          width: 130,
+          height: 130,
+          child: Stack(clipBehavior: Clip.none, children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.coral.withAlpha(102)),
+              ),
+              alignment: Alignment.center,
+              child: const Text('6×7', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white)),
+            ),
+            Positioned(left: 0, top: 8, child: _bulat('+', AppColors.coral, AppColors.slate)),
+            Positioned(right: 0, bottom: 6, child: _bulat('÷', AppColors.teal, Colors.white)),
+          ]),
+        ),
+      ),
+      const SizedBox(height: 22),
       const Text('Benar atau salah?',
-          textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.w800, color: Colors.white)),
       const SizedBox(height: 8),
       const Text(
         'Kamu punya 60 detik. Tebak apakah hasil hitungan yang muncul benar. '
         'Soal makin sulit setiap 5 jawaban benar.',
         textAlign: TextAlign.center,
-        style: TextStyle(color: AppColors.muted, height: 1.4),
-      ),
-      const SizedBox(height: 20),
-      Panel(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            value: _pakaiSensor,
-            onChanged: (v) => setState(() => _pakaiSensor = v),
-            title: const Text('Kontrol miring (sensor akselerometer)',
-                style: TextStyle(fontWeight: FontWeight.w700)),
-            subtitle: const Text('Miringkan HP ke kanan untuk Benar, ke kiri untuk Salah.'),
-          ),
-          const Text('Tombol Benar/Salah tetap bisa dipakai.',
-              style: TextStyle(fontSize: 12.5, color: AppColors.muted)),
-        ]),
-      ),
-      const SizedBox(height: 12),
-      Panel(
-        child: Row(children: [
-          const Icon(Icons.emoji_events_outlined, color: AppColors.accent),
-          const SizedBox(width: 10),
-          Expanded(child: Text('Skor terbaikmu di HP ini: $_terbaik')),
-        ]),
+        style: TextStyle(color: _redup, height: 1.5),
       ),
       const SizedBox(height: 24),
-      PrimaryButton(label: 'Mulai', icon: Icons.play_arrow_rounded, onPressed: _mulai),
+      _kartuGelap(
+        child: Row(children: [
+          const Icon(Icons.screen_rotation_rounded, color: AppColors.teal),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('Kontrol miring (akselerometer)',
+                  style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white)),
+              SizedBox(height: 2),
+              Text('Miring kanan = Benar, miring kiri = Salah. Tombol tetap bisa dipakai.',
+                  style: TextStyle(fontSize: 12, color: _redup, height: 1.4)),
+            ]),
+          ),
+          Switch(value: _pakaiSensor, onChanged: (v) => setState(() => _pakaiSensor = v)),
+        ]),
+      ),
+      const SizedBox(height: 28),
+      PrimaryButton(label: 'Mulai bermain', icon: Icons.play_arrow_rounded, onPressed: _mulai),
     ]);
   }
 
+  Widget _bulat(String t, Color bg, Color fg) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+      alignment: Alignment.center,
+      child: Text(t, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: fg)),
+    );
+  }
+
   Widget _layarMain() {
-    final warnaWaktu = _sisa <= 10 ? AppColors.danger : AppColors.primary;
+    final warnaWaktu = _sisa <= 10 ? AppColors.coral : AppColors.teal;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      color: _kilat?.withAlpha(40) ?? Colors.transparent,
-      padding: const EdgeInsets.all(20),
+      color: _kilat?.withAlpha(45) ?? Colors.transparent,
       child: Column(children: [
-        Row(children: [
-          Pill('Level $_level'),
-          const SizedBox(width: 8),
-          Pill('Skor $_skor', color: AppColors.success),
-          const Spacer(),
-          Icon(Icons.timer_outlined, color: warnaWaktu),
-          const SizedBox(width: 4),
-          Text('$_sisa d', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: warnaWaktu)),
-        ]),
-        const SizedBox(height: 10),
-        LinearProgressIndicator(value: _sisa / _durasi, color: warnaWaktu, minHeight: 6),
-        const Spacer(),
-        Text(_soal.teks,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 44, fontWeight: FontWeight.w800, color: AppColors.ink)),
-        const SizedBox(height: 8),
-        if (_beruntun >= 3)
-          Text('$_beruntun benar berturut-turut! +5 bonus',
-              style: const TextStyle(color: AppColors.success, fontWeight: FontWeight.w700)),
-        const Spacer(),
-        if (_pakaiSensor) _indikatorMiring(),
-        const SizedBox(height: 14),
-        Row(children: [
-          Expanded(
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
-              onPressed: () => _jawab(false),
-              icon: const Icon(Icons.close_rounded),
-              label: const Text('Salah'),
-            ),
+        Container(
+          height: 54,
+          color: Colors.white.withAlpha(10),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+            _angka('SKOR', '$_skor'),
+            _angka('BENAR', '$_benar'),
+            _angka('COMBO', _beruntun >= 3 ? '×$_beruntun' : '-'),
+          ]),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+            child: Column(children: [
+              SizedBox(
+                width: 104,
+                height: 104,
+                child: Stack(fit: StackFit.expand, children: [
+                  CircularProgressIndicator(
+                    value: _sisa / _durasi,
+                    strokeWidth: 7,
+                    color: warnaWaktu,
+                    backgroundColor: Colors.white.withAlpha(26),
+                    strokeCap: StrokeCap.round,
+                  ),
+                  Center(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Text(_sisa.toString().padLeft(2, '0'),
+                          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white)),
+                      const Text('DETIK',
+                          style: TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: _redup, letterSpacing: 0.8)),
+                    ]),
+                  ),
+                ]),
+              ),
+              const Spacer(),
+              const Text('Apakah hasil ini benar?', style: TextStyle(color: _redup)),
+              const SizedBox(height: 8),
+              FittedBox(
+                child: Text(_soal.teks,
+                    style: const TextStyle(fontSize: 46, fontWeight: FontWeight.w800, color: Colors.white)),
+              ),
+              const SizedBox(height: 8),
+              if (_beruntun >= 3)
+                Text('$_beruntun benar berturut-turut! +5 bonus',
+                    style: const TextStyle(color: AppColors.teal, fontWeight: FontWeight.w800)),
+              const Spacer(),
+              if (_pakaiSensor) _indikatorMiring(),
+              const SizedBox(height: 16),
+              Row(children: [
+                Expanded(child: _tombolJawab('Salah', Icons.close_rounded, AppColors.danger, () => _jawab(false))),
+                const SizedBox(width: 12),
+                Expanded(child: _tombolJawab('Benar', Icons.check_rounded, AppColors.teal, () => _jawab(true))),
+              ]),
+            ]),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-              onPressed: () => _jawab(true),
-              icon: const Icon(Icons.check_rounded),
-              label: const Text('Benar'),
-            ),
-          ),
-        ]),
+        ),
       ]),
+    );
+  }
+
+  Widget _angka(String label, String nilai) {
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text(label, style: const TextStyle(fontSize: 10, color: _redup, fontWeight: FontWeight.w700)),
+      const SizedBox(height: 2),
+      Text(nilai, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+    ]);
+  }
+
+  Widget _tombolJawab(String label, IconData icon, Color warna, VoidCallback onTap) {
+    return Material(
+      color: warna,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: SizedBox(
+          height: 64,
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(icon, color: Colors.white),
+            const SizedBox(width: 6),
+            Text(label, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+          ]),
+        ),
+      ),
     );
   }
 
   Widget _indikatorMiring() {
     if (!_sensorAda) {
       return const Text('Menunggu sensor... (di Chrome/emulator mungkin tidak tersedia)',
-          textAlign: TextAlign.center, style: TextStyle(fontSize: 12.5, color: AppColors.muted));
+          textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: _redup));
     }
     // -1 = miring penuh ke kiri, 1 = penuh ke kanan.
     final posisi = (-_miringX / 9.8).clamp(-1.0, 1.0);
-    return Column(children: [
-      const Row(children: [
-        Text('← Salah', style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.w700)),
-        Spacer(),
-        Text('Benar →', style: TextStyle(color: AppColors.success, fontWeight: FontWeight.w700)),
-      ]),
-      const SizedBox(height: 6),
-      Container(
-        height: 14,
-        decoration: BoxDecoration(color: AppColors.line, borderRadius: BorderRadius.circular(8)),
-        child: Align(
-          alignment: Alignment(posisi, 0),
-          child: Container(
-            width: 26,
-            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(8)),
+    return _kartuGelap(
+      child: Column(children: [
+        const Row(children: [
+          Text('← Salah', style: TextStyle(color: Color(0xFFFF8A8E), fontWeight: FontWeight.w800, fontSize: 12.5)),
+          Spacer(),
+          Icon(Icons.screen_rotation_rounded, size: 16, color: _redup),
+          Spacer(),
+          Text('Benar →', style: TextStyle(color: AppColors.teal, fontWeight: FontWeight.w800, fontSize: 12.5)),
+        ]),
+        const SizedBox(height: 8),
+        Container(
+          height: 12,
+          decoration: BoxDecoration(color: Colors.white.withAlpha(26), borderRadius: BorderRadius.circular(8)),
+          child: Align(
+            alignment: Alignment(posisi, 0),
+            child: Container(
+              width: 28,
+              decoration: BoxDecoration(color: AppColors.coral, borderRadius: BorderRadius.circular(8)),
+            ),
           ),
         ),
-      ),
-    ]);
+      ]),
+    );
   }
 
   Widget _layarSelesai() {
     final total = _benar + _salah;
     final akurasi = total == 0 ? 0 : (_benar * 100 / total).round();
-    return ListView(padding: const EdgeInsets.all(24), children: [
-      const Icon(Icons.emoji_events_rounded, size: 80, color: AppColors.accent),
+    return ListView(padding: const EdgeInsets.fromLTRB(24, 16, 24, 24), children: [
+      const Icon(Icons.emoji_events_rounded, size: 72, color: AppColors.coral),
       const SizedBox(height: 8),
       const Text('Waktu habis!',
-          textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+          textAlign: TextAlign.center, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
       const SizedBox(height: 4),
       Text('$_skor poin',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: AppColors.primary)),
-      Text('Benar $_benar · Salah $_salah · Akurasi $akurasi% · Level $_level',
-          textAlign: TextAlign.center, style: const TextStyle(color: AppColors.muted)),
-      const SizedBox(height: 6),
+          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: AppColors.teal)),
+      const SizedBox(height: 14),
+      _kartuGelap(
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          _angka('BENAR', '$_benar'),
+          _angka('SALAH', '$_salah'),
+          _angka('AKURASI', '$akurasi%'),
+          _angka('LEVEL', '$_level'),
+        ]),
+      ),
+      const SizedBox(height: 8),
       Text(
         switch (_terkirim) {
           null => 'Menyimpan skor...',
@@ -384,31 +545,38 @@ class _GameScreenState extends State<GameScreen> {
           false => 'Skor tersimpan di HP. Akan dikirim ke server saat online.',
         },
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 12.5, color: AppColors.muted),
+        style: const TextStyle(fontSize: 12, color: _redup),
       ),
-      const SizedBox(height: 20),
-      const SectionTitle('Papan Peringkat'),
-      const SizedBox(height: 8),
+      const SizedBox(height: 22),
+      const Text('Papan Peringkat', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
+      const SizedBox(height: 10),
       if (_papan == null && _papanError == null)
         const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator())),
-      if (_papanError != null) Text(_papanError!, style: const TextStyle(color: AppColors.muted)),
-      if (_papan != null && _papan!.isEmpty)
-        const Text('Belum ada skor.', style: TextStyle(color: AppColors.muted)),
+      if (_papanError != null) Text(_papanError!, style: const TextStyle(color: _redup)),
+      if (_papan != null && _papan!.isEmpty) const Text('Belum ada skor.', style: TextStyle(color: _redup)),
       if (_papan != null)
         for (final p in _papan!)
           Padding(
             padding: const EdgeInsets.only(bottom: 8),
-            child: Panel(
+            child: _kartuGelap(
               child: Row(children: [
-                CircleAvatar(
-                  radius: 16,
-                  backgroundColor: p.peringkat <= 3 ? AppColors.accent : AppColors.line,
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: p.peringkat <= 3 ? AppColors.coral : Colors.white.withAlpha(26),
+                    shape: BoxShape.circle,
+                  ),
+                  alignment: Alignment.center,
                   child: Text('${p.peringkat}',
-                      style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.ink)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w800, color: p.peringkat <= 3 ? AppColors.slate : Colors.white)),
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: Text(p.nama, style: const TextStyle(fontWeight: FontWeight.w600))),
-                Text('${p.skor}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                Expanded(
+                  child: Text(p.nama, style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.white)),
+                ),
+                Text('${p.skor}', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.teal)),
               ]),
             ),
           ),

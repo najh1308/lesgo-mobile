@@ -35,7 +35,14 @@ class AuthService {
     return _simpanUser(UserModel.fromJson(Map<String, dynamic>.from(data)));
   }
 
+  /// Jika login sidik jari aktif, aplikasi hanya dikunci: token tetap tersimpan
+  /// terenkripsi sehingga pengguna bisa masuk lagi cukup dengan sidik jari.
+  /// Jika tidak aktif, token dihapus dari server dan HP.
   static Future<void> logout() async {
+    if (Session.token != null && await Session.biometrikAktif()) {
+      await Session.kunci();
+      return;
+    }
     try {
       await ApiClient.rpcAuth('api_logout');
     } catch (_) {
@@ -51,10 +58,10 @@ class AuthService {
     String? zona,
   }) async {
     final data = await ApiClient.rpcAuth('api_update_me', {
-      if (nama != null) 'p_nama': nama,
-      if (noHp != null) 'p_no_hp': noHp,
-      if (mataUang != null) 'p_mata_uang': mataUang,
-      if (zona != null) 'p_zona': zona,
+      'p_nama': ?nama,
+      'p_no_hp': ?noHp,
+      'p_mata_uang': ?mataUang,
+      'p_zona': ?zona,
     });
     return _simpanUser(UserModel.fromJson(Map<String, dynamic>.from(data)));
   }
