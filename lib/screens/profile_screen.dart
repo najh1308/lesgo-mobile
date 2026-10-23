@@ -14,6 +14,7 @@ import '../services/game_service.dart';
 import '../services/pendaftaran_service.dart';
 import '../widgets/common.dart';
 import 'main_shell.dart';
+import '../core/personalisasi.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -239,13 +240,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(18, 0, 18, 28),
           child: ListenableBuilder(
-            listenable: AppSettings.i,
+            listenable: Listenable.merge([AppSettings.i, Personalisasi.i]),
             builder: (context, _) {
               final s = AppSettings.i;
               return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 const SectionTitle('Pengaturan akun'),
                 const SizedBox(height: 13),
                 _MenuGrup(children: [
+                _Menu(Icons.tune_rounded, 'Personalisasi',
+                      Personalisasi.i.aktif ? Personalisasi.i.ringkasan : 'Atur peran, mapel, dan estimasi biaya',
+                      onTap: () => Navigator.pushNamed(context, '/personalisasi')),
                   _Menu(Icons.person_outline_rounded, 'Data diri', 'Nama dan nomor HP', onTap: _ubahData),
                   _Menu(Icons.lock_outline_rounded, 'Ubah password', 'Ganti kata sandi akun', onTap: _ubahPassword),
                   _Menu(Icons.fingerprint_rounded, 'Login sidik jari', _biometrik ? 'Aktif' : 'Nonaktif',

@@ -5,6 +5,7 @@ import '../core/api_client.dart';
 import '../core/app_settings.dart';
 import '../core/session.dart';
 import '../models/models.dart';
+import 'notifikasi_service.dart';
 
 /// Login buatan sendiri: password diperiksa (bcrypt) oleh fungsi api_login di Supabase,
 /// lalu token session disimpan terenkripsi di HP (flutter_secure_storage).
@@ -48,6 +49,7 @@ class AuthService {
     } catch (_) {
       // Tetap keluar di sisi aplikasi walau server tidak terjangkau.
     }
+    await NotifikasiService.batalkanSemua(); // pengingat milik akun ini jangan terbawa
     await Session.clear();
   }
 

@@ -23,6 +23,16 @@ class PendaftaranService {
     return data.map((e) => Pendaftaran.fromJson(Map<String, dynamic>.from(e))).toList();
   }
 
+    /// Jadwalkan ulang semua pengingat dari data server (dipanggil saat aplikasi dibuka).
+  static Future<void> sinkronkanPengingat() async {
+    if (!NotifikasiService.didukung) return;
+    try {
+      await NotifikasiService.sinkronkan(await list());
+    } catch (_) {
+      // Offline: pengingat yang sudah terjadwal di HP tetap berjalan.
+    }
+  }
+
   static Future<void> batal(int id) async {
     await ApiClient.rpcAuth('api_pendaftaran_batal', {'p_id': id});
     await NotifikasiService.batalkanPengingat(id);

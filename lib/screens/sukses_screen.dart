@@ -6,6 +6,7 @@ import '../core/theme.dart';
 import '../models/models.dart';
 import '../widgets/common.dart';
 import 'main_shell.dart';
+import '../services/notifikasi_service.dart';
 
 class SuksesScreen extends StatelessWidget {
   final Pendaftaran pendaftaran;
@@ -83,6 +84,24 @@ class SuksesScreen extends StatelessWidget {
               ]),
             ),
           ),
+                    if (NotifikasiService.didukung) ...[
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: AppColors.softTeal, borderRadius: BorderRadius.circular(14)),
+              child: const Row(children: [
+                Icon(Icons.notifications_active_outlined, size: 20, color: AppColors.teal),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Pengingat aktif: kamu akan diberi notifikasi 1 hari dan 1 jam sebelum setiap sesi, '
+                    'bahkan saat aplikasi ditutup.',
+                    style: TextStyle(fontSize: 12.5, height: 1.45),
+                  ),
+                ),
+              ]),
+            ),
+          ],
           const SizedBox(height: 26),
           PrimaryButton(label: 'Lihat aktivitas', onPressed: () => _keTab(context, 3)),
           const SizedBox(height: 6),

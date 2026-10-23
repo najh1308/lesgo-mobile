@@ -14,6 +14,7 @@ import '../widgets/bimbel_card.dart';
 import '../widgets/bimbel_map.dart';
 import '../widgets/common.dart';
 import 'main_shell.dart';
+import '../core/personalisasi.dart';
 
 class _Opsi<T> {
   final String label;
@@ -47,12 +48,29 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
+    _isiDariPersonalisasi();
+    Personalisasi.i.addListener(_personalisasiBerubah);
     ShellController.searchQuery.addListener(_dariBeranda);
+    _muat();
+  }
+
+  /// Filter awal mengikuti jawaban personalisasi (bisa direset lewat tombol reset filter).
+  void _isiDariPersonalisasi() {
+    final p = Personalisasi.i;
+    if (!p.aktif) return;
+    _jenjang = p.jenjang;
+    _hargaMax = p.budgetMax;
+    _mapel = p.mapel.length == 1 ? p.mapel.first : null;
+  }
+
+  void _personalisasiBerubah() {
+    _isiDariPersonalisasi();
     _muat();
   }
 
   @override
   void dispose() {
+    Personalisasi.i.removeListener(_personalisasiBerubah);
     ShellController.searchQuery.removeListener(_dariBeranda);
     _debounce?.cancel();
     _q.dispose();

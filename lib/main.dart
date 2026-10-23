@@ -17,6 +17,7 @@ import 'screens/sukses_screen.dart';
 import 'screens/tutor_ai_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'services/notifikasi_service.dart';
+import 'screens/personalisasi_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,6 +67,9 @@ class GeoLearnApp extends StatelessWidget {
         break;
       case '/sukses':
         page = SuksesScreen(pendaftaran: s.arguments as Pendaftaran);
+        break;
+      case '/personalisasi':
+        page = const PersonalisasiScreen();
         break;
       case '/saran':
         page = const SaranKesanScreen();

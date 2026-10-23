@@ -7,6 +7,9 @@ import 'belajar_screen.dart';
 import 'home_screen.dart';
 import 'profile_screen.dart';
 import 'search_screen.dart';
+import '../services/pendaftaran_service.dart';
+import '../core/personalisasi.dart';
+import '../core/session.dart';
 
 /// Penghubung antar tab: pindah tab, memicu muat ulang data, dan membawa kata kunci pencarian.
 class ShellController {
@@ -29,11 +32,35 @@ class MainShell extends StatefulWidget {
 }
 
 class _MainShellState extends State<MainShell> {
-  @override
+    @override
   void initState() {
     super.initState();
     ShellController.tab.value = 0;
     NotifikasiService.mintaIzin(); // Android 13+: tampilkan dialog izin notifikasi
+    PendaftaranService.sinkronkanPengingat();
+    _cekPersonalisasi(); // isi ulang pengingat jadwal di HP
+    NotifikasiService.sinyalBukaAktivitas.addListener(_cekKetukNotifikasi);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _cekKetukNotifikasi());
+  }
+
+  @override
+    /// Akun baru (atau belum pernah mengisi): tanyakan preferensi belajar sekali di awal.
+  Future<void> _cekPersonalisasi() async {
+    await Personalisasi.i.muat(Session.user?.id);
+    if (!mounted || Personalisasi.i.sudahAtur) return;
+    Navigator.of(context).pushNamed('/personalisasi');
+  }
+  void dispose() {
+    NotifikasiService.sinyalBukaAktivitas.removeListener(_cekKetukNotifikasi);
+    super.dispose();
+  }
+
+  /// Notifikasi pengingat diketuk: tutup halaman di atas Beranda lalu buka tab Aktivitas.
+  void _cekKetukNotifikasi() {
+    if (!NotifikasiService.bukaAktivitasMenunggu || !mounted) return;
+    NotifikasiService.bukaAktivitasMenunggu = false;
+    Navigator.of(context).popUntil((r) => r.settings.name == '/home' || r.isFirst);
+    ShellController.tab.value = 3;
   }
 
   @override

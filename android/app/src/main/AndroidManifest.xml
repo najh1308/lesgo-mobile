@@ -9,6 +9,7 @@
     <!-- Notifikasi (Android 13+) dan pengingat jadwal yang tetap ada setelah HP dinyalakan ulang. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <!-- Semua koneksi memakai https (Supabase, Gemini, Frankfurter, OpenStreetMap). -->
     <application
