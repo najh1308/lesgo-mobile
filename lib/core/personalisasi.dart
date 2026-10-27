@@ -11,8 +11,14 @@ class Personalisasi extends ChangeNotifier {
   static final Personalisasi i = Personalisasi._();
   Personalisasi._();
 
-  static const peranOpsi = ['Pelajar SD', 'Pelajar SMP', 'Pelajar SMA', 'Mahasiswa', 'Orang tua'];
-  static const jenjangAnakOpsi = ['SD', 'SMP', 'SMA', 'UTBK'];
+  static const peranOpsi = [
+    'Pelajar SD',
+    'Pelajar SMP',
+    'Pelajar SMA',
+    'Orang tua',
+  ];
+  static const jenjangAnakOpsi = ['SD', 'SMP', 'SMA'];
+
   /// Pilihan tujuan (langkah 2) menyesuaikan peran dan jenjang yang dipilih di langkah 1.
   static List<String> tujuanUntuk(String? peran, Set<String> jenjangAnak) {
     switch (peran) {
@@ -22,7 +28,7 @@ class Personalisasi extends ChangeNotifier {
           'Menaikkan nilai',
           'Memahami materi dasar',
           'Mencari bimbel dekat rumah',
-          'Belajar mandiri dengan Chatbot',
+          'Belajar mandiri dengan Tutor AI',
         ];
       case 'Pelajar SMP':
         return [
@@ -37,17 +43,9 @@ class Personalisasi extends ChangeNotifier {
         return [
           'Menaikkan nilai',
           'Persiapan ujian sekolah',
-          'Persiapan UTBK',
+          'Persiapan TKA',
           'Memperdalam materi',
           'Mencari bimbel dekat rumah',
-          'Belajar mandiri dengan Tutor AI',
-        ];
-      case 'Mahasiswa':
-        return [
-          'Persiapan UTBK',
-          'Mengulang materi dasar',
-          'Belajar mata kuliah dasar',
-          'Mencari bimbel dekat kampus',
           'Belajar mandiri dengan Tutor AI',
         ];
       case 'Orang tua':
@@ -55,13 +53,14 @@ class Personalisasi extends ChangeNotifier {
           'Mencari bimbel untuk anak',
           'Membantu menaikkan nilai anak',
           'Persiapan ujian anak',
-          if (jenjangAnak.contains('SMA') || jenjangAnak.contains('UTBK')) 'Persiapan UTBK anak',
+          if (jenjangAnak.contains('SMA')) 'Persiapan TKA anak',
           'Membandingkan biaya dan jadwal bimbel',
           'Memantau jadwal belajar anak',
         ];
     }
     return [];
   }
+
   static const mapelOpsi = [
     'Matematika',
     'Fisika',
@@ -81,14 +80,15 @@ class Personalisasi extends ChangeNotifier {
   int? _userId;
   bool sudahAtur = false; // sudah pernah melewati/mengisi halaman personalisasi
   bool budgetDipilih = false;
-    String? peran;
+  String? peran;
   Set<String> jenjangAnak = {}; // khusus Orang tua: boleh lebih dari satu
   Set<String> tujuan = {};
   Set<String> mapel = {};
   int? budgetMax; // per bulan; null = fleksibel
 
   /// True jika pengguna benar-benar mengisi sesuatu (bukan sekadar melewati).
-  bool get aktif => peran != null || tujuan.isNotEmpty || mapel.isNotEmpty || budgetDipilih;
+  bool get aktif =>
+      peran != null || tujuan.isNotEmpty || mapel.isNotEmpty || budgetDipilih;
 
   /// Jenjang yang dipakai untuk menyaring bimbel.
   /// Semua jenjang yang relevan untuk menyaring bimbel.
@@ -102,8 +102,6 @@ class Personalisasi extends ChangeNotifier {
         return {'SMA'};
       case 'Orang tua':
         return jenjangAnak;
-      case 'Mahasiswa':
-        return tujuan.contains('Persiapan UTBK') ? {'UTBK'} : {};
     }
     return {};
   }
@@ -134,9 +132,21 @@ class Personalisasi extends ChangeNotifier {
           final m = jsonDecode(raw) as Map<String, dynamic>;
           sudahAtur = true;
           peran = m['peran'] as String?;
+          if (peran == 'Mahasiswa') peran = null; // peran sudah dihapus
           final ja = m['jenjang_anak']; // data lama berupa teks, data baru berupa daftar
-          jenjangAnak = ja is List ? ja.map((e) => e.toString()).toSet() : (ja is String ? {ja} : <String>{});
-          tujuan = ((m['tujuan'] ?? []) as List).map((e) => e.toString()).toSet();
+          jenjangAnak = ja is List
+              ? ja.map((e) => e.toString()).toSet()
+              : (ja is String ? {ja} : <String>{});
+          // data lama: jenjang 'UTBK' dilebur ke 'SMA'
+          if (jenjangAnak.remove('UTBK')) jenjangAnak.add('SMA');
+          tujuan = ((m['tujuan'] ?? []) as List)
+              .map((e) => e.toString())
+              .map(
+                (e) => e == 'Persiapan UTBK'
+                    ? 'Persiapan TKA'
+                    : (e == 'Persiapan UTBK anak' ? 'Persiapan TKA anak' : e),
+              )
+              .toSet();
           mapel = ((m['mapel'] ?? []) as List).map((e) => e.toString()).toSet();
           budgetDipilih = m['budget_dipilih'] == true;
           budgetMax = (m['budget_max'] as num?)?.toInt();
@@ -147,13 +157,13 @@ class Personalisasi extends ChangeNotifier {
   }
 
   Map<String, dynamic> toJson() => {
-        'peran': peran,
-        'jenjang_anak': jenjangAnak.toList(),
-        'tujuan': tujuan.toList(),
-        'mapel': mapel.toList(),
-        'budget_dipilih': budgetDipilih,
-        'budget_max': budgetMax,
-      };
+    'peran': peran,
+    'jenjang_anak': jenjangAnak.toList(),
+    'tujuan': tujuan.toList(),
+    'mapel': mapel.toList(),
+    'budget_dipilih': budgetDipilih,
+    'budget_max': budgetMax,
+  };
 
   Future<void> _simpan() async {
     if (_userId == null) return;
@@ -190,26 +200,41 @@ class Personalisasi extends ChangeNotifier {
   /// Ringkasan singkat untuk ditampilkan di Beranda dan Profil.
   String get ringkasan {
     final bagian = <String>[
-      if (peran != null) (peran == 'Orang tua' && jenjangAnak.isNotEmpty) ? 'Orang tua (${jenjangAnak.join(', ')})' : peran!,
-      if (mapel.isNotEmpty) mapel.take(2).join(', ') + (mapel.length > 2 ? ' +${mapel.length - 2}' : ''),
+      if (peran != null)
+        (peran == 'Orang tua' && jenjangAnak.isNotEmpty)
+            ? 'Orang tua (${jenjangAnak.join(', ')})'
+            : peran!,
+      if (mapel.isNotEmpty)
+        mapel.take(2).join(', ') +
+            (mapel.length > 2 ? ' +${mapel.length - 2}' : ''),
       if (budgetMax != null) 'maks. ${Fmt.harga(budgetMax!)}',
     ];
     return bagian.join(' · ');
   }
 
-  String get ringkasanBiaya => budgetMax == null ? 'fleksibel' : 'maks. ${Fmt.harga(budgetMax!)} per bulan';
+  String get ringkasanBiaya => budgetMax == null
+      ? 'fleksibel'
+      : 'maks. ${Fmt.harga(budgetMax!)} per bulan';
 
   /// Teks profil untuk Tutor AI (bahasa Indonesia, apa adanya).
   String get untukAi {
     if (!aktif) return '';
     final b = <String>[];
     if (peran != null) {
-      final anak = (peran == 'Orang tua' && jenjangAnak.isNotEmpty) ? ', anaknya di jenjang ${jenjangAnak.join(', ')}' : '';      b.add('peran: $peran$anak');
+      final anak = (peran == 'Orang tua' && jenjangAnak.isNotEmpty)
+          ? ', anaknya di jenjang ${jenjangAnak.join(', ')}'
+          : '';
+      b.add('peran: $peran$anak');
     }
-    if (tujuan.isNotEmpty) b.add('tujuan memakai aplikasi: ${tujuan.join(', ')}');
+    if (tujuan.isNotEmpty)
+      b.add('tujuan memakai aplikasi: ${tujuan.join(', ')}');
     if (mapel.isNotEmpty) b.add('mata pelajaran diminati: ${mapel.join(', ')}');
     if (budgetDipilih) {
-      b.add(budgetMax == null ? 'budget bimbel fleksibel' : 'budget bimbel maksimal Rp$budgetMax per bulan');
+      b.add(
+        budgetMax == null
+            ? 'budget bimbel fleksibel'
+            : 'budget bimbel maksimal Rp$budgetMax per bulan',
+      );
     }
     return b.join('; ');
   }

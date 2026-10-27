@@ -26,7 +26,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
     'Bimbel online yang murah untuk SMP?',
     'Jelaskan cara mencari KPK dari 12 dan 18',
     'Bagaimana cara mendaftar program bimbel?',
-    'Tips belajar UTBK penalaran matematika',
+    'Tips belajar TKA Matematika untuk kelas 12',
   ];
 
   /// Contoh pertanyaan mengikuti jawaban personalisasi.

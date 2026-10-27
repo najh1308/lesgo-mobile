@@ -432,7 +432,7 @@ class _SearchScreenState extends State<SearchScreen> {
             padding: const EdgeInsets.fromLTRB(18, 12, 18, 4),
             children: [
               _Chip('Semua', !_adaFilter, _resetFilter),
-              for (final j in ['SD', 'SMP', 'SMA', 'UTBK'])
+              for (final j in ['SD', 'SMP', 'SMA'])
                 _Chip(j, _jenjang == j, () {
                   setState(() => _jenjang = _jenjang == j ? null : j);
                   _muat();

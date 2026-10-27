@@ -17,7 +17,7 @@ class ShellController {
   static final ValueNotifier<int> refresh = ValueNotifier<int>(0);
   static final ValueNotifier<String?> searchQuery = ValueNotifier<String?>(null);
 
-  /// Jenjang yang dipilih dari Beranda (SD/SMP/SMA/UTBK) untuk langsung difilter di tab Cari.
+  /// Jenjang yang dipilih dari Beranda (SD/SMP/SMA) untuk langsung difilter di tab Cari.
   static final ValueNotifier<String?> searchJenjang = ValueNotifier<String?>(null);
 
   /// Panggil setelah data berubah (daftar, batal, favorit) agar tab lain memuat ulang.

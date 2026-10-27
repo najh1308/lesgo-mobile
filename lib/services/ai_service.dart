@@ -18,7 +18,7 @@ class AiService {
   static const sapaan = ChatPesan(
     'ai',
     'Halo! Aku Geo, asisten AI GeoLearn. Aku bisa merekomendasikan bimbel di sekitarmu, '
-        'membantu memilih program dan jadwal, menjelaskan pelajaran SD sampai UTBK langkah demi langkah, '
+        'membantu memilih program dan jadwal, menjelaskan pelajaran SD sampai SMA (termasuk persiapan TKA) langkah demi langkah, '
         'serta memberi tips belajar. Mau tanya apa?',
   );
 
@@ -27,7 +27,7 @@ class AiService {
   static const _batasan =
       'ATURAN WAJIB: Kamu adalah Geo, asisten aplikasi GeoLearn. Jawab HANYA topik berikut: '
       '(1) rekomendasi, info, harga, program, jadwal, dan pendaftaran bimbel di GeoLearn, '
-      '(2) penjelasan materi pelajaran SD, SMP, SMA, dan UTBK, '
+      '(2) penjelasan materi pelajaran SD, SMP, dan SMA (termasuk persiapan TKA), '
       '(3) tips dan strategi belajar, '
       '(4) cara memakai fitur aplikasi GeoLearn. '
       'Untuk topik lain (hiburan, politik, kesehatan, berita, pemrograman, curhat, dan sebagainya), '

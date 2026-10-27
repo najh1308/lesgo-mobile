@@ -171,7 +171,7 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                 textInputAction: TextInputAction.search,
                 onSubmitted: (_) => _cari(),
                 decoration: InputDecoration(
-                  hintText: 'Cari kota, kecamatan, kampus, atau alamat...',
+                  hintText: 'Cari kota, kecamatan, sekolah, atau alamat...',
                   prefixIcon: const Icon(Icons.search_rounded),
                   suffixIcon: _mencari
                       ? const Padding(

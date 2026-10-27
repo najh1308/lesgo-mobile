@@ -150,7 +150,7 @@ class LocationService {
     'Accept-Language': 'id',
   };
 
-  /// Mencari tempat berdasarkan nama (kota, kecamatan, kampus, alamat, dst.).
+  /// Mencari tempat berdasarkan nama (kota, kecamatan, sekolah, alamat, dst.).
   static Future<List<TempatHasil>> cariTempat(String query) async {
     final q = query.trim();
     if (q.length < 3) return [];

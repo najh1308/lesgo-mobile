@@ -563,8 +563,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const data = [
       ('SD', 'Kelas 1–6'),
       ('SMP', 'Kelas 7–9'),
-      ('SMA', 'Kelas 10–12'),
-      ('UTBK', 'Siap PTN'),
+      ('SMA', 'Kelas 10–12 · TKA'),
     ];
     return Row(
       children: [
@@ -574,13 +573,13 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Material(
               color: Personalisasi.i.jenjangSet.contains(data[i].$1)
                   ? AppColors.softTeal
-                  : (i == 3 ? AppColors.softCoral : Colors.white),
+                  : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
                 side: BorderSide(
                   color: Personalisasi.i.jenjangSet.contains(data[i].$1)
                       ? AppColors.teal
-                      : (i == 3 ? const Color(0xFFFFD1AF) : AppColors.line),
+                      : AppColors.line,
                 ),
               ),
               child: InkWell(
@@ -595,12 +594,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Text(
                         data[i].$1,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 15,
-                          color: i == 3
-                              ? AppColors.coralDark
-                              : AppColors.indigo,
+                          color: AppColors.indigo,
                         ),
                       ),
                       const SizedBox(height: 3),

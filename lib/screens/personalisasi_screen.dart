@@ -27,7 +27,6 @@ class _PersonalisasiScreenState extends State<PersonalisasiScreen> {
     'Pelajar SD': Icons.child_care_rounded,
     'Pelajar SMP': Icons.backpack_outlined,
     'Pelajar SMA': Icons.school_outlined,
-    'Mahasiswa': Icons.local_library_outlined,
     'Orang tua': Icons.family_restroom_rounded,
   };
 
