@@ -14,6 +14,7 @@ import '../services/bimbel_service.dart';
 import '../services/location_service.dart';
 import '../widgets/bimbel_card.dart';
 import '../widgets/common.dart';
+import '../widgets/pilih_lokasi.dart';
 import 'main_shell.dart';
 import '../core/personalisasi.dart';
 
@@ -43,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _muat();
     ShellController.refresh.addListener(_muat);
     Personalisasi.i.addListener(_muat);
+    LocationService.berubah.addListener(_muat); // lokasi diganti -> muat ulang
     _sensor =
         userAccelerometerEventStream(samplingPeriod: SensorInterval.uiInterval)
             .listen(
@@ -56,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     ShellController.refresh.removeListener(_muat);
     Personalisasi.i.removeListener(_muat);
+    LocationService.berubah.removeListener(_muat);
     _sensor?.cancel();
     _cari.dispose();
     super.dispose();
@@ -257,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: Icons.smart_toy_outlined,
                           bg: AppColors.softBlue,
                           fg: AppColors.indigo,
-                          judul: 'Tutor AI',
+                          judul: 'Chatbot Geo',
                           sub: 'Tanya materi apa saja',
                           onTap: () => Navigator.pushNamed(context, '/tutor'),
                         ),
@@ -339,26 +342,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.location_on_outlined,
-                          size: 15,
-                          color: Colors.white.withAlpha(190),
-                        ),
-                        const SizedBox(width: 3),
-                        Flexible(
-                          child: Text(
-                            _loc?.label ?? 'Mencari lokasi...',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.white.withAlpha(190),
+                    // Ketuk untuk memilih lokasi lain (kota, peta, atau GPS).
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => tampilPilihLokasi(context),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 15,
+                            color: Colors.white.withAlpha(190),
+                          ),
+                          const SizedBox(width: 3),
+                          Flexible(
+                            child: Text(
+                              _loc?.label ?? 'Mencari lokasi...',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.white.withAlpha(190),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 2),
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 18,
+                            color: Colors.white.withAlpha(190),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

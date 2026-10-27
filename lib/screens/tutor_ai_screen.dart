@@ -155,7 +155,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Geo · Tutor AI',
+                  'Geo · Chatbot',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
@@ -211,7 +211,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                 SizedBox(width: 6),
                 Expanded(
                   child: Text(
-                    'Tanya pelajaran, pengetahuan umum, atau rekomendasi bimbel. Periksa kembali jawaban penting.',
+                    'Tanya pelajaran atau rekomendasi bimbel. Periksa kembali jawaban penting.',
                     style: TextStyle(fontSize: 11.5, color: AppColors.tealDark),
                   ),
                 ),

@@ -37,8 +37,23 @@ class Fmt {
   static String rating(double r) => r.toStringAsFixed(1).replaceAll('.', ',');
 
   static const _bulan = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
   ];
+
+  /// DateTime -> '2026-11-02' (format yang dipakai server dan layar lain).
+  static String iso(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   /// '2026-11-02' -> '2 Nov 2026'
   static String tanggal(String iso) {
@@ -70,7 +85,11 @@ class TimeUtil {
   static DateTime _mingguTerakhir(int tahun, int bulan) {
     final hariTerakhir = DateTime.utc(tahun, bulan + 1, 0);
     // weekday: Senin=1 ... Minggu=7, jadi (weekday % 7) = jumlah hari sejak Minggu.
-    return DateTime.utc(tahun, bulan, hariTerakhir.day - (hariTerakhir.weekday % 7));
+    return DateTime.utc(
+      tahun,
+      bulan,
+      hariTerakhir.day - (hariTerakhir.weekday % 7),
+    );
   }
 
   /// London memakai BST (UTC+1) dari Minggu terakhir Maret sampai Minggu
@@ -91,8 +110,13 @@ class TimeUtil {
     if (t == null || p.length < 2) return jamWib;
 
     // Jam jadwal adalah WIB (UTC+7): ubah dulu ke UTC.
-    final utc = DateTime.utc(t.year, t.month, t.day, int.parse(p[0]), int.parse(p[1]))
-        .subtract(const Duration(hours: 7));
+    final utc = DateTime.utc(
+      t.year,
+      t.month,
+      t.day,
+      int.parse(p[0]),
+      int.parse(p[1]),
+    ).subtract(const Duration(hours: 7));
 
     int offset;
     String label;
@@ -115,18 +139,29 @@ class TimeUtil {
     }
 
     final lokal = utc.add(Duration(hours: offset));
-    final selisihHari = DateTime.utc(lokal.year, lokal.month, lokal.day)
-        .difference(DateTime.utc(t.year, t.month, t.day))
-        .inDays;
-    final ket = selisihHari > 0 ? ' (+1 hari)' : (selisihHari < 0 ? ' (-1 hari)' : '');
+    final selisihHari = DateTime.utc(
+      lokal.year,
+      lokal.month,
+      lokal.day,
+    ).difference(DateTime.utc(t.year, t.month, t.day)).inDays;
+    final ket = selisihHari > 0
+        ? ' (+1 hari)'
+        : (selisihHari < 0 ? ' (-1 hari)' : '');
     return '${_dua(lokal.hour)}:${_dua(lokal.minute)} $label$ket';
   }
 
   /// Rentang jam, mis. '08:30 - 10:00 GMT'.
-  static String rentang(String tanggalIso, String mulai, String selesai, String zona) {
+  static String rentang(
+    String tanggalIso,
+    String mulai,
+    String selesai,
+    String zona,
+  ) {
     final a = konversi(tanggalIso, mulai, zona);
     final b = konversi(tanggalIso, selesai, zona);
-    final label = b.split(' ').length > 1 ? b.substring(b.indexOf(' ') + 1) : '';
+    final label = b.split(' ').length > 1
+        ? b.substring(b.indexOf(' ') + 1)
+        : '';
     return '${a.split(' ').first} - ${b.split(' ').first} $label'.trim();
   }
 }

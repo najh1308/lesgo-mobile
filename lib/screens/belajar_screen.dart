@@ -4,7 +4,7 @@ import '../core/theme.dart';
 import '../services/game_service.dart';
 import '../widgets/common.dart';
 
-/// Tab Belajar (Ruang Belajar): Tutor AI (LLM) dan mini game Hitung Cepat.
+/// Tab Belajar (Ruang Belajar): Chatbot Geo (LLM) dan mini game Hitung Cepat.
 class BelajarScreen extends StatefulWidget {
   const BelajarScreen({super.key});
 
@@ -134,9 +134,9 @@ class _BelajarScreenState extends State<BelajarScreen> {
         const SizedBox(width: 14),
         const Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Eyebrow('TUTOR CERDAS 24/7', color: AppColors.teal),
+            Eyebrow('ASISTEN CERDAS 24/7', color: AppColors.teal),
             SizedBox(height: 6),
-            Text('Tutor AI Geo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink)),
+            Text('Chatbot Geo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink)),
             SizedBox(height: 6),
             Text('Tanyakan PR, pahami konsep langkah demi langkah, atau minta tips belajar.',
                 style: TextStyle(fontSize: 12, color: AppColors.muted, height: 1.45)),

@@ -16,12 +16,14 @@ import 'screens/splash_screen.dart';
 import 'screens/sukses_screen.dart';
 import 'screens/tutor_ai_screen.dart';
 import 'screens/welcome_screen.dart';
+import 'services/location_service.dart';
 import 'services/notifikasi_service.dart';
 import 'screens/personalisasi_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalDb.init(); // Hive: database lokal
+  await LocationService.muatTersimpan(); // lokasi pilihan pengguna (jika ada)
   await ApiClient.init(); // Supabase: database online
   await NotifikasiService.init();
   await AppSettings.i.muatLokal(); // mata uang & zona dari Hive

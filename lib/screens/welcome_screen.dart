@@ -70,7 +70,7 @@ class WelcomeScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.7, height: 1.2)),
               const SizedBox(height: 8),
               const Text(
-                'Cari bimbel terdekat, daftar kelas, belajar bareng Tutor AI, dan asah otak lewat mini game.',
+                'Cari bimbel terdekat, daftar kelas, ngobrol dengan Chatbot Geo, dan asah otak lewat mini game.',
                 style: TextStyle(color: AppColors.muted, height: 1.5),
               ),
               const SizedBox(height: 24),

@@ -22,7 +22,7 @@ class Personalisasi extends ChangeNotifier {
           'Menaikkan nilai',
           'Memahami materi dasar',
           'Mencari bimbel dekat rumah',
-          'Belajar mandiri dengan Tutor AI',
+          'Belajar mandiri dengan Chatbot',
         ];
       case 'Pelajar SMP':
         return [

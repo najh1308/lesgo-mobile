@@ -28,23 +28,22 @@ class _KompasBimbelState extends State<KompasBimbel> {
   double? _azimut; // arah HP terhadap utara magnetik (derajat)
   double _sinHalus = 0, _cosHalus = 1; // untuk menghaluskan gerakan jarum
   double? _bearing; // arah dari pengguna ke bimbel (derajat dari utara)
-  bool _lokasiAsli = false;
+  String _ketLokasi = 'lokasi cadangan';
   bool _tidakAda = false;
 
   @override
   void initState() {
     super.initState();
     _hitungBearing();
-    _accSub = accelerometerEventStream(samplingPeriod: SensorInterval.uiInterval).listen(
-      (e) => _gravitasi = [e.x, e.y, e.z],
-      onError: (_) => _gagal(),
-      cancelOnError: true,
-    );
-    _magSub = magnetometerEventStream(samplingPeriod: SensorInterval.uiInterval).listen(
-      _onMagnet,
-      onError: (_) => _gagal(),
-      cancelOnError: true,
-    );
+    _accSub =
+        accelerometerEventStream(samplingPeriod: SensorInterval.uiInterval)
+            .listen(
+              (e) => _gravitasi = [e.x, e.y, e.z],
+              onError: (_) => _gagal(),
+              cancelOnError: true,
+            );
+    _magSub = magnetometerEventStream(samplingPeriod: SensorInterval.uiInterval)
+        .listen(_onMagnet, onError: (_) => _gagal(), cancelOnError: true);
     // Jika 3 detik tidak ada data, anggap HP tidak punya sensor (misalnya di Chrome).
     _cekSensor = Timer(const Duration(seconds: 3), () {
       if (_azimut == null) _gagal();
@@ -72,7 +71,9 @@ class _KompasBimbelState extends State<KompasBimbel> {
     if (!mounted) return;
     setState(() {
       _bearing = (atan2(y, x) * 180 / pi + 360) % 360;
-      _lokasiAsli = loc.asli;
+      _ketLokasi = loc.asli
+          ? 'lokasimu'
+          : (loc.pilihan ? 'lokasi pilihanmu' : 'lokasi cadangan');
     });
   }
 
@@ -104,7 +105,16 @@ class _KompasBimbelState extends State<KompasBimbel> {
   }
 
   static String _arahMataAngin(double d) {
-    const nama = ['Utara', 'Timur Laut', 'Timur', 'Tenggara', 'Selatan', 'Barat Daya', 'Barat', 'Barat Laut'];
+    const nama = [
+      'Utara',
+      'Timur Laut',
+      'Timur',
+      'Tenggara',
+      'Selatan',
+      'Barat Daya',
+      'Barat',
+      'Barat Laut',
+    ];
     return nama[((d + 22.5) % 360 ~/ 45)];
   }
 
@@ -112,26 +122,39 @@ class _KompasBimbelState extends State<KompasBimbel> {
   Widget build(BuildContext context) {
     final bearing = _bearing;
     return Panel(
-      child: Row(children: [
-        SizedBox(width: 92, height: 92, child: _jarum()),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Kompas ke Bimbel', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 4),
-            if (bearing != null)
-              Text('Bimbel ada di arah ${_arahMataAngin(bearing)} (${bearing.round()}°) dari '
-                  '${_lokasiAsli ? 'lokasimu' : 'lokasi cadangan'}.'),
-            const SizedBox(height: 4),
-            Text(
-              _tidakAda
-                  ? 'Sensor magnetometer tidak tersedia di perangkat ini. Coba di HP Android.'
-                  : 'Pegang HP mendatar. Jauhkan dari magnet atau logam. Jika jarum melenceng, gerakkan HP membentuk angka 8.',
-              style: const TextStyle(fontSize: 12.5, color: AppColors.muted),
+      child: Row(
+        children: [
+          SizedBox(width: 92, height: 92, child: _jarum()),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Kompas ke Bimbel',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 4),
+                if (bearing != null)
+                  Text(
+                    'Bimbel ada di arah ${_arahMataAngin(bearing)} (${bearing.round()}°) dari '
+                    '$_ketLokasi.',
+                  ),
+                const SizedBox(height: 4),
+                Text(
+                  _tidakAda
+                      ? 'Sensor magnetometer tidak tersedia di perangkat ini. Coba di HP Android.'
+                      : 'Pegang HP mendatar. Jauhkan dari magnet atau logam. Jika jarum melenceng, gerakkan HP membentuk angka 8.',
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    color: AppColors.muted,
+                  ),
+                ),
+              ],
             ),
-          ]),
-        ),
-      ]),
+          ),
+        ],
+      ),
     );
   }
 
@@ -141,34 +164,59 @@ class _KompasBimbelState extends State<KompasBimbel> {
       return CircleAvatar(
         backgroundColor: AppColors.line,
         child: _tidakAda
-            ? const Icon(Icons.explore_off_outlined, color: AppColors.muted, size: 36)
-            : const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2)),
+            ? const Icon(
+                Icons.explore_off_outlined,
+                color: AppColors.muted,
+                size: 36,
+              )
+            : const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
       );
     }
     final sudut = (bearing - az) * pi / 180;
-    return Stack(alignment: Alignment.center, children: [
-      Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.primary.withAlpha(18),
-          border: Border.all(color: AppColors.primary.withAlpha(60), width: 2),
-        ),
-      ),
-      // Huruf U menunjukkan utara.
-      Transform.rotate(
-        angle: -az * pi / 180,
-        child: const Align(
-          alignment: Alignment.topCenter,
-          child: Padding(
-            padding: EdgeInsets.only(top: 2),
-            child: Text('U', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.danger)),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.primary.withAlpha(18),
+            border: Border.all(
+              color: AppColors.primary.withAlpha(60),
+              width: 2,
+            ),
           ),
         ),
-      ),
-      Transform.rotate(
-        angle: sudut,
-        child: const Icon(Icons.navigation_rounded, size: 52, color: AppColors.primary),
-      ),
-    ]);
+        // Huruf U menunjukkan utara.
+        Transform.rotate(
+          angle: -az * pi / 180,
+          child: const Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.only(top: 2),
+              child: Text(
+                'U',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.danger,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Transform.rotate(
+          angle: sudut,
+          child: const Icon(
+            Icons.navigation_rounded,
+            size: 52,
+            color: AppColors.primary,
+          ),
+        ),
+      ],
+    );
   }
 }

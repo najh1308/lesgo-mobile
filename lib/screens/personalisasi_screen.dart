@@ -151,7 +151,7 @@ class _PersonalisasiScreenState extends State<PersonalisasiScreen> {
     switch (_langkah) {
       case 0:
         return [
-          _judul(eyebrow, 'Kamu sebagai siapa?', 'Supaya rekomendasi bimbel dan Tutor AI pas untukmu.'),
+          _judul(eyebrow, 'Kamu sebagai siapa?', 'Supaya rekomendasi bimbel dan Chatbot pas untukmu.'),
           for (final o in Personalisasi.peranOpsi)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),

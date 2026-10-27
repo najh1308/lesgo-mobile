@@ -54,9 +54,11 @@ class AiService {
   /// [percakapan] sudah termasuk pertanyaan terbaru di posisi terakhir.
   /// [percakapan] sudah termasuk pertanyaan terbaru di posisi terakhir.
   static Future<String> tanya(List<ChatPesan> percakapan) async {
-    final kirim = percakapan.length > 12 ? percakapan.sublist(percakapan.length - 12) : percakapan;
+    final kirim = percakapan.length > 12
+        ? percakapan.sublist(percakapan.length - 12)
+        : percakapan;
     // Lokasi dikirim agar Tutor AI bisa merekomendasikan bimbel terdekat.
-    final loc = LocationService.terakhir ?? await LocationService.current();
+    final loc = LocationService.aktif ?? await LocationService.current();
 
     // ▼▼▼ BLOK BARU (menggantikan blok 'pesan' dan ApiClient.fungsi yang lama) ▼▼▼
     // Aturan topik dan profil pengguna disisipkan ke pertanyaan terbaru; riwayat yang disimpan tetap teks asli.
@@ -67,7 +69,11 @@ class AiService {
     final pesan = <Map<String, String>>[
       for (var i = 0; i < kirim.length; i++)
         i == kirim.length - 1 && kirim[i].dariSaya
-            ? {'role': 'user', 'teks': '$_batasan$konteks\n\nPertanyaan pengguna: ${kirim[i].teks}'}
+            ? {
+                'role': 'user',
+                'teks':
+                    '$_batasan$konteks\n\nPertanyaan pengguna: ${kirim[i].teks}',
+              }
             : kirim[i].toJson(),
     ];
     final data = await ApiClient.fungsi('tutor-ai', {
@@ -86,6 +92,7 @@ class AiService {
     } catch (_) {}
     return jawaban;
   }
+
   /// Membuang sisa format markdown yang kadang tetap dikirim model.
   static String _rapikan(String s) => s
       .replaceAll('**', '')

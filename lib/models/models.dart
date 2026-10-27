@@ -4,11 +4,13 @@ import 'package:flutter/widgets.dart';
 
 double _d(dynamic v) => v == null ? 0 : (v as num).toDouble();
 int _i(dynamic v) => v == null ? 0 : (v as num).toInt();
+
 /// Hanya URL http(s) yang dipakai sebagai gambar online.
 String? _url(dynamic v) {
   final t = v?.toString().trim() ?? '';
   return t.startsWith('http://') || t.startsWith('https://') ? t : null;
 }
+
 List<String> _list(dynamic v) =>
     v == null ? <String>[] : (v as List).map((e) => e.toString()).toList();
 
@@ -39,14 +41,14 @@ class UserModel {
   }
 
   factory UserModel.fromJson(Map<String, dynamic> j) => UserModel(
-        id: _i(j['id']),
-        nama: j['nama'] ?? '',
-        email: j['email'] ?? '',
-        noHp: j['no_hp'] ?? '',
-        mataUang: j['mata_uang_pref'] ?? 'IDR',
-        zonaWaktu: j['zona_waktu_pref'] ?? 'WIB',
-        fotoBase64: j['foto_base64'],
-      );
+    id: _i(j['id']),
+    nama: j['nama'] ?? '',
+    email: j['email'] ?? '',
+    noHp: j['no_hp'] ?? '',
+    mataUang: j['mata_uang_pref'] ?? 'IDR',
+    zonaWaktu: j['zona_waktu_pref'] ?? 'WIB',
+    fotoBase64: j['foto_base64'],
+  );
 }
 
 class Jadwal {
@@ -63,15 +65,15 @@ class Jadwal {
     required this.sisa,
   });
   factory Jadwal.fromJson(Map<String, dynamic> j) => Jadwal(
-        id: _i(j['id']),
-        hari: j['hari'] ?? '',
-        jamMulai: j['jam_mulai'] ?? '',
-        jamSelesai: j['jam_selesai'] ?? '',
-        tanggalMulai: j['tanggal_mulai'] ?? '',
-        kuota: _i(j['kuota']),
-        terisi: _i(j['terisi']),
-        sisa: _i(j['sisa']),
-      );
+    id: _i(j['id']),
+    hari: j['hari'] ?? '',
+    jamMulai: j['jam_mulai'] ?? '',
+    jamSelesai: j['jam_selesai'] ?? '',
+    tanggalMulai: j['tanggal_mulai'] ?? '',
+    kuota: _i(j['kuota']),
+    terisi: _i(j['terisi']),
+    sisa: _i(j['sisa']),
+  );
 }
 
 class Program {
@@ -90,18 +92,18 @@ class Program {
     required this.jadwal,
   });
   factory Program.fromJson(Map<String, dynamic> j) => Program(
-        id: _i(j['id']),
-        nama: j['nama_program'] ?? '',
-        jenjang: j['jenjang'] ?? '',
-        mapel: j['mapel'] ?? '',
-        mode: j['mode'] ?? 'offline',
-        hargaIdr: _i(j['harga_idr']),
-        durasiMinggu: _i(j['durasi_minggu']),
-        deskripsi: j['deskripsi'] ?? '',
-        jadwal: ((j['jadwal'] ?? []) as List)
-            .map((e) => Jadwal.fromJson(Map<String, dynamic>.from(e)))
-            .toList(),
-      );
+    id: _i(j['id']),
+    nama: j['nama_program'] ?? '',
+    jenjang: j['jenjang'] ?? '',
+    mapel: j['mapel'] ?? '',
+    mode: j['mode'] ?? 'offline',
+    hargaIdr: _i(j['harga_idr']),
+    durasiMinggu: _i(j['durasi_minggu']),
+    deskripsi: j['deskripsi'] ?? '',
+    jadwal: ((j['jadwal'] ?? []) as List)
+        .map((e) => Jadwal.fromJson(Map<String, dynamic>.from(e)))
+        .toList(),
+  );
 }
 
 /// Ringkasan bimbel untuk daftar (beranda, pencarian, favorit).
@@ -130,21 +132,21 @@ class Bimbel {
     this.isFavorit = false,
   });
   factory Bimbel.fromJson(Map<String, dynamic> j) => Bimbel(
-        id: _i(j['id']),
-        nama: j['nama'] ?? '',
-        alamat: j['alamat'] ?? '',
-        kota: j['kota'] ?? '',
-        lat: _d(j['latitude']),
-        lng: _d(j['longitude']),
-        rating: _d(j['rating_avg']),
-        hargaMulai: _i(j['harga_mulai']),
-        jenjang: _list(j['jenjang']),
-        mode: _list(j['mode']),
-        mapel: j['mapel'] ?? '',
-        jarakKm: j['jarak_km'] == null ? null : _d(j['jarak_km']),
-        foto: _url(j['foto']),
-        isFavorit: j['is_favorit'] == true,
-      );
+    id: _i(j['id']),
+    nama: j['nama'] ?? '',
+    alamat: j['alamat'] ?? '',
+    kota: j['kota'] ?? '',
+    lat: _d(j['latitude']),
+    lng: _d(j['longitude']),
+    rating: _d(j['rating_avg']),
+    hargaMulai: _i(j['harga_mulai']),
+    jenjang: _list(j['jenjang']),
+    mode: _list(j['mode']),
+    mapel: j['mapel'] ?? '',
+    jarakKm: j['jarak_km'] == null ? null : _d(j['jarak_km']),
+    foto: _url(j['foto']),
+    isFavorit: j['is_favorit'] == true,
+  );
 }
 
 class BimbelDetail {
@@ -173,36 +175,41 @@ class BimbelDetail {
     this.foto,
   });
   factory BimbelDetail.fromJson(Map<String, dynamic> j) => BimbelDetail(
-        id: _i(j['id']),
-        nama: j['nama'] ?? '',
-        alamat: j['alamat'] ?? '',
-        kota: j['kota'] ?? '',
-        deskripsi: j['deskripsi'] ?? '',
-        kontak: j['kontak'] ?? '',
-        jamBuka: j['jam_buka'] ?? '',
-        lat: _d(j['latitude']),
-        lng: _d(j['longitude']),
-        rating: _d(j['rating_avg']),
-        jumlahReview: _i(j['jumlah_review']),
-        jarakKm: j['jarak_km'] == null ? null : _d(j['jarak_km']),
-        foto: _url(j['foto']),
-        isFavorit: j['is_favorit'] == true,
-        program: ((j['program'] ?? []) as List)
-            .map((e) => Program.fromJson(Map<String, dynamic>.from(e)))
-            .toList(),
-      );
+    id: _i(j['id']),
+    nama: j['nama'] ?? '',
+    alamat: j['alamat'] ?? '',
+    kota: j['kota'] ?? '',
+    deskripsi: j['deskripsi'] ?? '',
+    kontak: j['kontak'] ?? '',
+    jamBuka: j['jam_buka'] ?? '',
+    lat: _d(j['latitude']),
+    lng: _d(j['longitude']),
+    rating: _d(j['rating_avg']),
+    jumlahReview: _i(j['jumlah_review']),
+    jarakKm: j['jarak_km'] == null ? null : _d(j['jarak_km']),
+    foto: _url(j['foto']),
+    isFavorit: j['is_favorit'] == true,
+    program: ((j['program'] ?? []) as List)
+        .map((e) => Program.fromJson(Map<String, dynamic>.from(e)))
+        .toList(),
+  );
 }
 
 class Review {
   final String nama, komentar, createdAt;
   final int rating;
-  Review({required this.nama, required this.komentar, required this.createdAt, required this.rating});
+  Review({
+    required this.nama,
+    required this.komentar,
+    required this.createdAt,
+    required this.rating,
+  });
   factory Review.fromJson(Map<String, dynamic> j) => Review(
-        nama: j['nama'] ?? '',
-        komentar: j['komentar'] ?? '',
-        createdAt: j['created_at'] ?? '',
-        rating: _i(j['rating']),
-      );
+    nama: j['nama'] ?? '',
+    komentar: j['komentar'] ?? '',
+    createdAt: j['created_at'] ?? '',
+    rating: _i(j['rating']),
+  );
 }
 
 class Pendaftaran {
@@ -229,6 +236,27 @@ class Pendaftaran {
     required this.jamSelesai,
     required this.tanggalMulai,
   });
+
+  /// Salinan pendaftaran dengan tanggal mulai pilihan pengguna (format 'yyyy-MM-dd').
+  Pendaftaran denganTanggalMulai(String iso) => Pendaftaran(
+    id: id,
+    status: status,
+    totalIdr: totalIdr,
+    metodeBayar: metodeBayar,
+    createdAt: createdAt,
+    bimbelId: bimbelId,
+    bimbelNama: bimbelNama,
+    bimbelAlamat: bimbelAlamat,
+    namaProgram: namaProgram,
+    jenjang: jenjang,
+    mapel: mapel,
+    mode: mode,
+    durasiMinggu: durasiMinggu,
+    hari: hari,
+    jamMulai: jamMulai,
+    jamSelesai: jamSelesai,
+    tanggalMulai: iso,
+  );
   factory Pendaftaran.fromJson(Map<String, dynamic> j) {
     final p = Map<String, dynamic>.from(j['program']);
     final b = Map<String, dynamic>.from(j['bimbel']);
@@ -267,18 +295,22 @@ class BlockItem {
     required this.createdAt,
   });
   factory BlockItem.fromJson(Map<String, dynamic> j) => BlockItem(
-        index: _i(j['block_index']),
-        event: j['event'] ?? '-',
-        hash: j['hash'] ?? '',
-        prevHash: j['prev_hash'] ?? '',
-        nonce: _i(j['nonce']),
-        createdAt: j['created_at'] ?? '',
-      );
+    index: _i(j['block_index']),
+    event: j['event'] ?? '-',
+    hash: j['hash'] ?? '',
+    prevHash: j['prev_hash'] ?? '',
+    nonce: _i(j['nonce']),
+    createdAt: j['created_at'] ?? '',
+  );
 }
 
 class ValidasiHasil {
   final bool valid;
   final int totalBlock;
   final String pesan;
-  ValidasiHasil({required this.valid, required this.totalBlock, required this.pesan});
+  ValidasiHasil({
+    required this.valid,
+    required this.totalBlock,
+    required this.pesan,
+  });
 }
