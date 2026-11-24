@@ -82,9 +82,16 @@ class _DetailScreenState extends State<DetailScreen> {
   /// Membuka aplikasi peta di HP dengan rute ke bimbel (tanpa API key).
   Future<void> _rute() async {
     final d = _d!;
-    final uri = Uri.parse(
-      'https://www.google.com/maps/dir/?api=1&destination=${d.lat},${d.lng}',
-    );
+    // Bimbel nyata: kirim NAMA + kota (bukan alamat jalan) supaya Google Maps mencari
+    // tempatnya dan menampilkan nama bimbel. Data contoh (fiktif): pakai koordinat.
+    final tujuan = (d.gmapsPlaceId != null || d.dataNyata)
+        ? '${d.nama}, ${d.kota}'
+        : '${d.lat},${d.lng}';
+    final uri = Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'destination': tujuan,
+      if (d.gmapsPlaceId != null) 'destination_place_id': d.gmapsPlaceId!,
+    });
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && mounted)
       showMsg(context, 'Tidak dapat membuka aplikasi peta', error: true);
@@ -420,17 +427,19 @@ class _DetailScreenState extends State<DetailScreen> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                const SectionTitle('Tentang bimbel'),
-                const SizedBox(height: 8),
-                Text(
-                  d.deskripsi,
-                  style: const TextStyle(
-                    color: AppColors.muted,
-                    height: 1.55,
-                    fontSize: 13.5,
+                if (d.deskripsi.trim().isNotEmpty) ...[
+                  const SectionTitle('Tentang bimbel'),
+                  const SizedBox(height: 8),
+                  Text(
+                    d.deskripsi,
+                    style: const TextStyle(
+                      color: AppColors.muted,
+                      height: 1.55,
+                      fontSize: 13.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
+                  const SizedBox(height: 12),
+                ],
                 if (d.kontak.trim().isNotEmpty) _Kontak(d.kontak),
                 const SizedBox(height: 18),
                 SectionTitle(
@@ -780,6 +789,9 @@ class _Kontak extends StatelessWidget {
     return a.startsWith('0') ? '62${a.substring(1)}' : a;
   }
 
+  /// WhatsApp hanya untuk nomor HP (62 8xx ...), bukan telepon rumah/kantor.
+  bool get _bisaWa => _wa.startsWith('628');
+
   Future<void> _buka(BuildContext context, Uri uri) async {
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted)
@@ -823,11 +835,12 @@ class _Kontak extends StatelessWidget {
             onPressed: () => _buka(context, Uri(scheme: 'tel', path: _angka)),
             icon: const Icon(Icons.call_rounded, color: AppColors.indigo),
           ),
-          IconButton(
-            tooltip: 'WhatsApp',
-            onPressed: () => _buka(context, Uri.parse('https://wa.me/$_wa')),
-            icon: const Icon(Icons.chat_rounded, color: AppColors.teal),
-          ),
+          if (_bisaWa)
+            IconButton(
+              tooltip: 'WhatsApp',
+              onPressed: () => _buka(context, Uri.parse('https://wa.me/$_wa')),
+              icon: const Icon(Icons.chat_rounded, color: AppColors.teal),
+            ),
         ],
       ),
     );

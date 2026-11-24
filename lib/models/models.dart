@@ -157,6 +157,8 @@ class BimbelDetail {
   bool isFavorit;
   final List<Program> program;
   final String? foto;
+  final String? gmapsPlaceId; // ID tempat di Google Maps (opsional)
+  final bool dataNyata; // true bila alamat & telepon bimbel adalah data nyata
   BimbelDetail({
     required this.id,
     required this.nama,
@@ -173,6 +175,8 @@ class BimbelDetail {
     required this.program,
     this.jarakKm,
     this.foto,
+    this.gmapsPlaceId,
+    this.dataNyata = false,
   });
   factory BimbelDetail.fromJson(Map<String, dynamic> j) => BimbelDetail(
     id: _i(j['id']),
@@ -189,6 +193,12 @@ class BimbelDetail {
     jarakKm: j['jarak_km'] == null ? null : _d(j['jarak_km']),
     foto: _url(j['foto']),
     isFavorit: j['is_favorit'] == true,
+    gmapsPlaceId:
+        (j['gmaps_place_id'] is String &&
+            (j['gmaps_place_id'] as String).isNotEmpty)
+        ? j['gmaps_place_id'] as String
+        : null,
+    dataNyata: j['data_nyata'] == true,
     program: ((j['program'] ?? []) as List)
         .map((e) => Program.fromJson(Map<String, dynamic>.from(e)))
         .toList(),
