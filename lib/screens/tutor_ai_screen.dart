@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/api_client.dart';
-import '../core/theme.dart';
 import '../services/ai_service.dart';
 import '../widgets/common.dart';
 import '../core/personalisasi.dart';
@@ -110,18 +109,27 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
   }
 
   Future<void> _hapus() async {
+    final dialogBtnStyle = TextButton.styleFrom(
+      foregroundColor: const Color(0xFF00A896),
+      textStyle: const TextStyle(fontWeight: FontWeight.w700),
+    );
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Hapus percakapan?'),
         content: const Text('Riwayat chat di HP ini akan dihapus.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
+            style: dialogBtnStyle,
             child: const Text('Batal'),
           ),
           TextButton(
             onPressed: () => Navigator.pop(c, true),
+            style: dialogBtnStyle,
             child: const Text('Hapus'),
           ),
         ],
@@ -136,9 +144,14 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
   Widget build(BuildContext context) {
     final semua = [AiService.sapaan, ..._pesan];
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
       appBar: AppBar(
-        backgroundColor: AppColors.indigo,
+        backgroundColor: const Color(0xFF0F4C81),
         foregroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
         systemOverlayStyle: SystemUiOverlayStyle.light,
         shape: const Border(),
         titleSpacing: 0,
@@ -146,7 +159,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
           children: [
             const IconBox(
               Icons.smart_toy_outlined,
-              bg: AppColors.teal,
+              bg: Color(0xFF00A896),
               fg: Colors.white,
               size: 40,
             ),
@@ -169,7 +182,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                       height: 7,
                       decoration: BoxDecoration(
                         color: _menunggu
-                            ? AppColors.coral
+                            ? const Color(0xFFF4A261)
                             : const Color(0xFF59DB9E),
                         shape: BoxShape.circle,
                       ),
@@ -203,16 +216,16 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
         children: [
           Container(
             width: double.infinity,
-            color: AppColors.softTeal,
+            color: const Color(0xFFE4F7F4),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
             child: const Row(
               children: [
-                Icon(Icons.auto_awesome, size: 15, color: AppColors.teal),
+                Icon(Icons.auto_awesome, size: 15, color: Color(0xFF00A896)),
                 SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     'Tanya pelajaran atau rekomendasi bimbel. Periksa kembali jawaban penting.',
-                    style: TextStyle(fontSize: 11.5, color: AppColors.tealDark),
+                    style: TextStyle(fontSize: 11.5, color: Color(0xFF0D7D76)),
                   ),
                 ),
               ],
@@ -230,7 +243,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.softGrey,
+                      color: const Color(0xFFEEF1F4),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Text(
@@ -239,7 +252,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: AppColors.muted,
+                        color: Color(0xFF6F7B8F),
                       ),
                     ),
                   ),
@@ -256,12 +269,15 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                         SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Color(0xFF00A896),
+                          ),
                         ),
                         SizedBox(width: 10),
                         Text(
                           'Geo sedang berpikir...',
-                          style: TextStyle(color: AppColors.muted),
+                          style: TextStyle(color: Color(0xFF6F7B8F)),
                         ),
                       ],
                     ),
@@ -270,7 +286,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                   const SizedBox(height: 12),
                   const Text(
                     'Coba tanyakan:',
-                    style: TextStyle(fontSize: 12.5, color: AppColors.muted),
+                    style: TextStyle(fontSize: 12.5, color: Color(0xFF6F7B8F)),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -282,11 +298,14 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                           label: Text(c),
                           labelStyle: const TextStyle(
                             fontSize: 12.5,
-                            color: AppColors.teal,
+                            color: Color(0xFF00A896),
                             fontWeight: FontWeight.w600,
                           ),
                           backgroundColor: Colors.white,
                           side: const BorderSide(color: Color(0xFFA8DCD5)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                           onPressed: () => _kirim(c),
                         ),
                     ],
@@ -298,7 +317,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
           Container(
             decoration: const BoxDecoration(
               color: Colors.white,
-              border: Border(top: BorderSide(color: AppColors.line)),
+              border: Border(top: BorderSide(color: Color(0xFFE6EBF0))),
             ),
             child: SafeArea(
               top: false,
@@ -314,25 +333,32 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                         maxLines: 4,
                         textInputAction: TextInputAction.send,
                         onSubmitted: (_) => _kirim(),
+                        cursorColor: const Color(0xFF0F4C81),
+                        style: const TextStyle(color: Color(0xFF1D2A44)),
                         decoration: InputDecoration(
                           hintText: 'Tulis pertanyaanmu...',
-                          fillColor: AppColors.bg,
+                          hintStyle: const TextStyle(
+                            color: Color(0xFF8590A0),
+                            fontSize: 14,
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFF8F9FA),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
                           ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: const BorderSide(color: AppColors.line),
+                            borderSide: const BorderSide(color: Color(0xFFE6EBF0)),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
-                            borderSide: const BorderSide(color: AppColors.line),
+                            borderSide: const BorderSide(color: Color(0xFFE6EBF0)),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(24),
                             borderSide: const BorderSide(
-                              color: AppColors.teal,
+                              color: Color(0xFF00A896),
                               width: 1.5,
                             ),
                           ),
@@ -341,7 +367,7 @@ class _TutorAiScreenState extends State<TutorAiScreen> {
                     ),
                     const SizedBox(width: 8),
                     Material(
-                      color: _menunggu ? AppColors.line : AppColors.teal,
+                      color: _menunggu ? const Color(0xFFE6EBF0) : const Color(0xFF00A896),
                       shape: const CircleBorder(),
                       child: InkWell(
                         customBorder: const CircleBorder(),
@@ -375,8 +401,8 @@ class _MiniBot extends StatelessWidget {
   Widget build(BuildContext context) {
     return const IconBox(
       Icons.smart_toy_outlined,
-      bg: AppColors.softTeal,
-      fg: AppColors.teal,
+      bg: Color(0xFFE4F7F4),
+      fg: Color(0xFF00A896),
       size: 28,
     );
   }
@@ -396,8 +422,8 @@ class _Gelembung extends StatelessWidget {
         maxWidth: MediaQuery.sizeOf(context).width * 0.74,
       ),
       decoration: BoxDecoration(
-        color: saya ? AppColors.indigo : Colors.white,
-        border: saya ? null : Border.all(color: AppColors.line),
+        color: saya ? const Color(0xFF0F4C81) : Colors.white,
+        border: saya ? null : Border.all(color: const Color(0xFFE6EBF0)),
         borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(18),
           topRight: const Radius.circular(18),
@@ -407,8 +433,9 @@ class _Gelembung extends StatelessWidget {
       ),
       child: SelectableText(
         p.teks,
+        cursorColor: const Color(0xFF0F4C81),
         style: TextStyle(
-          color: saya ? Colors.white : AppColors.ink,
+          color: saya ? Colors.white : const Color(0xFF1D2A44),
           height: 1.45,
           fontSize: 14,
         ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../core/theme.dart';
 import '../widgets/common.dart';
 
 /// Halaman pembuka GeoLearn dengan tombol "Mulai".
@@ -14,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: AppColors.indigo,
+        backgroundColor: const Color(0xFF0F4C81), // ubah warna latar halaman ini di sini
         body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Expanded(
             child: Padding(
@@ -43,11 +42,11 @@ class WelcomeScreen extends StatelessWidget {
                         Container(
                           width: 96,
                           height: 96,
-                          decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(30)),
+                          decoration: BoxDecoration(color: const Color(0xFF00A896), borderRadius: BorderRadius.circular(30)),
                           child: const Icon(Icons.location_on_rounded, size: 54, color: Colors.white),
                         ),
-                        const Positioned(top: 18, left: 34, child: _Bulat('π', AppColors.coral, AppColors.slate)),
-                        const Positioned(bottom: 30, right: 20, child: _Bulat('A+', Colors.white, AppColors.indigo)),
+                        const Positioned(top: 18, left: 34, child: _Bulat('π', Color(0xFFF4A261), Color(0xFF1D2A44))),
+                        const Positioned(bottom: 30, right: 20, child: _Bulat('A+', Colors.white, Color(0xFF0F4C81))),
                         const Positioned(top: 54, right: 14, child: _Ikon(Icons.menu_book_rounded)),
                         const Positioned(bottom: 26, left: 24, child: _Ikon(Icons.school_rounded)),
                       ]),
@@ -64,14 +63,19 @@ class WelcomeScreen extends StatelessWidget {
               borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             ),
             child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              const Eyebrow('BELAJAR LEBIH DEKAT', color: AppColors.teal, icon: Icons.auto_awesome),
+              const Eyebrow('BELAJAR LEBIH DEKAT', color: Color(0xFF00A896), icon: Icons.auto_awesome),
               const SizedBox(height: 10),
               const Text('Temukan bimbel terbaik\ndi sekitarmu',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.7, height: 1.2)),
+                  style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.7,
+                      height: 1.2,
+                      color: Color(0xFF1D2A44))),
               const SizedBox(height: 8),
               const Text(
                 'Cari bimbel terdekat, daftar kelas, ngobrol dengan Chatbot Geo, dan asah otak lewat mini game.',
-                style: TextStyle(color: AppColors.muted, height: 1.5),
+                style: TextStyle(color: Color(0xFF6F7B8F), height: 1.5),
               ),
               const SizedBox(height: 24),
               PrimaryButton(label: 'Mulai', onPressed: () => Navigator.pushReplacementNamed(context, '/login')),

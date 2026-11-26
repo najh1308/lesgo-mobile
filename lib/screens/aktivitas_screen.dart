@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../core/api_client.dart';
 import '../core/app_settings.dart';
 import '../core/format.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../services/bimbel_service.dart';
 import '../services/pendaftaran_service.dart';
@@ -18,43 +17,57 @@ class AktivitasScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Builder(
-          builder: (context) => PageHeader(
-            title: 'Aktivitas',
-            subtitle: 'Pendaftaran dan jadwal belajarmu',
-            trailing: SquareIconButton(
-              Icons.calendar_month_outlined,
-              tooltip: 'Jadwal',
-              onTap: () => DefaultTabController.of(context).animateTo(1),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+        body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Builder(
+            builder: (context) => PageHeader(
+              title: 'Aktivitas',
+              subtitle: 'Pendaftaran dan jadwal belajarmu',
+              trailing: SquareIconButton(
+                Icons.calendar_month_outlined,
+                tooltip: 'Jadwal',
+                onTap: () => DefaultTabController.of(context).animateTo(1),
+              ),
             ),
           ),
-        ),
-        Container(
-          margin: const EdgeInsets.fromLTRB(18, 16, 18, 4),
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(color: AppColors.softGrey, borderRadius: BorderRadius.circular(12)),
-          child: const TabBar(
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            labelPadding: EdgeInsets.symmetric(horizontal: 14),
-            tabs: [
-              Tab(height: 36, text: 'Pendaftaran'),
-              Tab(height: 36, text: 'Jadwal'),
-              Tab(height: 36, text: 'Favorit'),
-              Tab(height: 36, text: 'Terverifikasi'),
-            ],
+          Container(
+            margin: const EdgeInsets.fromLTRB(18, 16, 18, 4),
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(color: const Color(0xFFEEF1F4), borderRadius: BorderRadius.circular(12)),
+            child: const TabBar(
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              labelPadding: EdgeInsets.symmetric(horizontal: 14),
+              labelColor: Color(0xFF0F4C81),
+              unselectedLabelColor: Color(0xFF6F7B8F),
+              labelStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+              unselectedLabelStyle: TextStyle(fontSize: 13),
+              dividerColor: Colors.transparent,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicator: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(9)),
+                boxShadow: [BoxShadow(color: Color(0xFFCCD4DB), blurRadius: 6, offset: Offset(0, 2))],
+              ),
+              tabs: [
+                Tab(height: 36, text: 'Pendaftaran'),
+                Tab(height: 36, text: 'Jadwal'),
+                Tab(height: 36, text: 'Favorit'),
+                Tab(height: 36, text: 'Terverifikasi'),
+              ],
+            ),
           ),
-        ),
-        const Expanded(
-          child: TabBarView(children: [
-            _PendaftaranTab(),
-            _JadwalTab(),
-            _FavoritTab(),
-            _BlockchainTab(),
-          ]),
-        ),
-      ]),
+          const Expanded(
+            child: TabBarView(children: [
+              _PendaftaranTab(),
+              _JadwalTab(),
+              _FavoritTab(),
+              _BlockchainTab(),
+            ]),
+          ),
+        ]),
+      ),
     );
   }
 }
@@ -120,9 +133,11 @@ class _DaftarAsyncState<T> extends State<_DaftarAsync<T>> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) return const Center(child: CircularProgressIndicator(color: Color(0xFF00A896)));
     if (_error != null) return ErrorView(message: _error!, onRetry: _muat);
     return RefreshIndicator(
+      color: const Color(0xFF0F4C81),
+      backgroundColor: Colors.white,
       onRefresh: _muat,
       child: _data.isEmpty
           ? ListView(children: [
@@ -149,13 +164,13 @@ class _DaftarAsyncState<T> extends State<_DaftarAsync<T>> {
 Color _warnaStatus(String s) {
   switch (s) {
     case 'aktif':
-      return AppColors.success;
+      return const Color(0xFF00A896);
     case 'batal':
-      return AppColors.danger;
+      return const Color(0xFFE5484D);
     case 'selesai':
-      return AppColors.muted;
+      return const Color(0xFF6F7B8F);
     default:
-      return AppColors.accent;
+      return const Color(0xFFF4A261);
   }
 }
 
@@ -191,10 +206,11 @@ class _PendaftaranTab extends StatelessWidget {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Pill(p.status[0].toUpperCase() + p.status.substring(1), color: _warnaStatus(p.status)),
                   const SizedBox(height: 5),
-                  Text(p.bimbelNama, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  Text(p.bimbelNama,
+                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2A44))),
                   Text('${p.jenjang} · ${p.namaProgram}',
                       maxLines: 1, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+                      style: const TextStyle(fontSize: 12, color: Color(0xFF6F7B8F))),
                 ]),
               ),
             ]),
@@ -202,7 +218,7 @@ class _PendaftaranTab extends StatelessWidget {
               margin: const EdgeInsets.symmetric(vertical: 12),
               padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: const BoxDecoration(
-                border: Border.symmetric(horizontal: BorderSide(color: AppColors.line)),
+                border: Border.symmetric(horizontal: BorderSide(color: Color(0xFFE6EBF0))),
               ),
               child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Expanded(
@@ -210,11 +226,11 @@ class _PendaftaranTab extends StatelessWidget {
                       '${p.hari}, ${TimeUtil.rentang(p.tanggalMulai, p.jamMulai, p.jamSelesai, AppSettings.i.zona)}'),
                 ),
                 Expanded(child: _Meta('Mulai', Fmt.tanggal(p.tanggalMulai))),
-                Expanded(child: _Meta('Total', Fmt.harga(p.totalIdr), warna: AppColors.indigo)),
+                Expanded(child: _Meta('Total', Fmt.harga(p.totalIdr), warna: const Color(0xFF0F4C81))),
               ]),
             ),
             Material(
-              color: AppColors.softTeal,
+              color: const Color(0xFFE4F7F4),
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
                 borderRadius: BorderRadius.circular(12),
@@ -222,17 +238,17 @@ class _PendaftaranTab extends StatelessWidget {
                 child: const Padding(
                   padding: EdgeInsets.all(10),
                   child: Row(children: [
-                    IconBox(Icons.verified_user_outlined, bg: Colors.white, fg: AppColors.teal, size: 30),
+                    IconBox(Icons.verified_user_outlined, bg: Colors.white, fg: Color(0xFF00A896), size: 30),
                     SizedBox(width: 9),
                     Expanded(
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text('Tercatat di blockchain',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Color(0xFF1D2A44))),
                         Text('Ketuk untuk melihat & memvalidasi riwayat',
-                            style: TextStyle(fontSize: 11, color: AppColors.muted)),
+                            style: TextStyle(fontSize: 11, color: Color(0xFF6F7B8F))),
                       ]),
                     ),
-                    Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.muted),
+                    Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF6F7B8F)),
                   ]),
                 ),
               ),
@@ -242,7 +258,11 @@ class _PendaftaranTab extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () => _batal(context, p, muatUlang),
-                  child: const Text('Batalkan pendaftaran', style: TextStyle(color: AppColors.danger)),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFFE5484D),
+                    textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  child: const Text('Batalkan pendaftaran', style: TextStyle(color: Color(0xFFE5484D))),
                 ),
               ),
           ]),
@@ -255,11 +275,28 @@ class _PendaftaranTab extends StatelessWidget {
     final ya = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text('Batalkan pendaftaran?'),
         content: Text('Pendaftaran di ${p.bimbelNama} akan dibatalkan. Pembatalan juga dicatat di riwayat terverifikasi.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Tidak')),
-          TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('Ya, batalkan')),
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF00A896),
+              textStyle: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            child: const Text('Tidak'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(c, true),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFF00A896),
+              textStyle: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            child: const Text('Ya, batalkan'),
+          ),
         ],
       ),
     );
@@ -296,16 +333,17 @@ class _JadwalTab extends StatelessWidget {
           const SizedBox(width: 14),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(p.namaProgram, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5)),
+              Text(p.namaProgram,
+                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5, color: Color(0xFF1D2A44))),
               const SizedBox(height: 2),
-              Text(p.bimbelNama, style: const TextStyle(color: AppColors.muted, fontSize: 12.5)),
+              Text(p.bimbelNama, style: const TextStyle(color: Color(0xFF6F7B8F), fontSize: 12.5)),
               const SizedBox(height: 6),
               Row(children: [
-                const Icon(Icons.schedule_rounded, size: 15, color: AppColors.teal),
+                const Icon(Icons.schedule_rounded, size: 15, color: Color(0xFF00A896)),
                 const SizedBox(width: 4),
                 Flexible(
                   child: Text('${p.hari} · ${TimeUtil.rentang(p.tanggalMulai, p.jamMulai, p.jamSelesai, AppSettings.i.zona)}',
-                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: Color(0xFF1D2A44))),
                 ),
               ]),
             ]),
@@ -405,14 +443,16 @@ class _BlockchainTabState extends State<_BlockchainTab> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) return const Center(child: CircularProgressIndicator(color: Color(0xFF00A896)));
     if (_error != null) return ErrorView(message: _error!, onRetry: _muat);
     final valid = _hasil?.valid;
-    final warna = valid == false ? AppColors.danger : AppColors.teal;
+    final warna = valid == false ? const Color(0xFFE5484D) : const Color(0xFF00A896);
     final idxTerbaru = _blocks.fold<int>(-1, (m, b) => b.index > m ? b.index : m);
     final blokTerbaru = _blocks.where((b) => b.index == idxTerbaru);
     final terakhir = blokTerbaru.isEmpty ? null : blokTerbaru.first.createdAt;
     return RefreshIndicator(
+      color: const Color(0xFF0F4C81),
+      backgroundColor: Colors.white,
       onRefresh: _muat,
       child: ListView(padding: const EdgeInsets.fromLTRB(18, 14, 18, 24), children: [
         Container(
@@ -420,37 +460,37 @@ class _BlockchainTabState extends State<_BlockchainTab> {
           decoration: BoxDecoration(
             color: valid == null ? Colors.white : warna.withAlpha(26),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: valid == null ? AppColors.line : warna.withAlpha(90)),
+            border: Border.all(color: valid == null ? const Color(0xFFE6EBF0) : warna.withAlpha(90)),
           ),
           child: Row(children: [
             Container(
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: valid == null ? AppColors.softBlue : warna,
+                color: valid == null ? const Color(0xFFEAF2F8) : warna,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
                 valid == false ? Icons.gpp_bad_outlined : Icons.verified_user_outlined,
                 size: 30,
-                color: valid == null ? AppColors.indigo : Colors.white,
+                color: valid == null ? const Color(0xFF0F4C81) : Colors.white,
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Eyebrow('STATUS INTEGRITAS', color: AppColors.muted),
+                const Eyebrow('STATUS INTEGRITAS', color: Color(0xFF6F7B8F)),
                 const SizedBox(height: 3),
                 Text(
                   valid == null ? 'Siap divalidasi' : _hasil!.pesan,
                   style: TextStyle(
-                      fontSize: 15.5, fontWeight: FontWeight.w800, color: valid == null ? AppColors.ink : warna),
+                      fontSize: 15.5, fontWeight: FontWeight.w800, color: valid == null ? const Color(0xFF1D2A44) : warna),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   '${_hasil?.totalBlock ?? _blocks.length} block'
                   '${terakhir != null ? ' · terakhir ${Fmt.tanggalJam(terakhir)}' : ''}',
-                  style: const TextStyle(fontSize: 11.5, color: AppColors.muted),
+                  style: const TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F)),
                 ),
               ]),
             ),
@@ -502,17 +542,17 @@ class _BlockTileState extends State<_BlockTile> {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: terbaru ? AppColors.teal : Colors.white,
+                color: terbaru ? const Color(0xFF00A896) : Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.teal, width: 2),
+                border: Border.all(color: const Color(0xFF00A896), width: 2),
               ),
               alignment: Alignment.center,
               child: terbaru
                   ? const Icon(Icons.check_rounded, size: 16, color: Colors.white)
                   : Text('${b.index}',
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.teal)),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFF00A896))),
             ),
-            if (!widget.terakhir) Expanded(child: Container(width: 2, color: AppColors.softTeal)),
+            if (!widget.terakhir) Expanded(child: Container(width: 2, color: const Color(0xFFE4F7F4))),
           ]),
         ),
         const SizedBox(width: 10),
@@ -525,39 +565,40 @@ class _BlockTileState extends State<_BlockTile> {
                 Row(children: [
                   Text('BLOCK #${b.index}',
                       style: const TextStyle(
-                          fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.6, color: AppColors.indigo)),
+                          fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.6, color: Color(0xFF0F4C81))),
                   const Spacer(),
-                  Pill(terbaru ? 'Terbaru' : 'Tercatat', color: terbaru ? AppColors.teal : AppColors.muted),
+                  Pill(terbaru ? 'Terbaru' : 'Tercatat',
+                      color: terbaru ? const Color(0xFF00A896) : const Color(0xFF6F7B8F)),
                 ]),
                 const SizedBox(height: 6),
                 Row(children: [
                   Icon(batal ? Icons.cancel_outlined : Icons.how_to_reg_outlined,
-                      size: 17, color: batal ? AppColors.danger : AppColors.teal),
+                      size: 17, color: batal ? const Color(0xFFE5484D) : const Color(0xFF00A896)),
                   const SizedBox(width: 5),
                   Expanded(
                     child: Text(
                         batal
                             ? 'Pembatalan pendaftaran'
                             : (b.event.toUpperCase().contains('DAFTAR') ? 'Pendaftaran baru' : b.event),
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF1D2A44))),
                   ),
                 ]),
                 const SizedBox(height: 2),
-                Text(Fmt.tanggalJam(b.createdAt), style: const TextStyle(fontSize: 11.5, color: AppColors.muted)),
+                Text(Fmt.tanggalJam(b.createdAt), style: const TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F))),
                 if (_buka) ...[
                   const SizedBox(height: 10),
                   _Hash('HASH SAAT INI', b.hash),
                   const SizedBox(height: 6),
                   _Hash('HASH SEBELUMNYA', b.prevHash),
                   const SizedBox(height: 6),
-                  Text('Nonce: ${b.nonce}', style: const TextStyle(fontSize: 11.5, color: AppColors.muted)),
+                  Text('Nonce: ${b.nonce}', style: const TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F))),
                 ],
                 const SizedBox(height: 8),
                 Row(children: [
                   Text(_buka ? 'Sembunyikan detail' : 'Lihat detail',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.teal)),
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF00A896))),
                   Icon(_buka ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-                      size: 18, color: AppColors.teal),
+                      size: 18, color: const Color(0xFF00A896)),
                 ]),
               ]),
             ),
@@ -578,12 +619,12 @@ class _Hash extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(color: AppColors.bg, borderRadius: BorderRadius.circular(9)),
+      decoration: BoxDecoration(color: const Color(0xFFF8F9FA), borderRadius: BorderRadius.circular(9)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: AppColors.muted)),
+        Text(label, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: Color(0xFF6F7B8F))),
         const SizedBox(height: 3),
         Text(nilai.isEmpty ? '-' : nilai,
-            style: const TextStyle(fontSize: 11.5, fontFamily: 'monospace', color: AppColors.ink, height: 1.35)),
+            style: const TextStyle(fontSize: 11.5, fontFamily: 'monospace', color: Color(0xFF1D2A44), height: 1.35)),
       ]),
     );
   }
@@ -598,7 +639,7 @@ class _KelasBerikutnya extends StatelessWidget {
   Widget build(BuildContext context) {
     final jam = TimeUtil.konversi(p.tanggalMulai, p.jamMulai, AppSettings.i.zona);
     return Material(
-      color: AppColors.indigo,
+      color: const Color(0xFF0F4C81),
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
@@ -644,15 +685,15 @@ class _KotakTanggal extends StatelessWidget {
       width: 54,
       height: 60,
       decoration: BoxDecoration(
-        color: terang ? Colors.white : AppColors.softBlue,
+        color: terang ? Colors.white : const Color(0xFFEAF2F8),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Text(bagian.first,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.indigo, height: 1.1)),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF0F4C81), height: 1.1)),
         if (bagian.length > 1)
           Text(bagian[1].toUpperCase(),
-              style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: AppColors.indigo)),
+              style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w800, color: Color(0xFF0F4C81))),
       ]),
     );
   }
@@ -661,14 +702,14 @@ class _KotakTanggal extends StatelessWidget {
 class _Meta extends StatelessWidget {
   final String label, nilai;
   final Color warna;
-  const _Meta(this.label, this.nilai, {this.warna = AppColors.ink});
+  const _Meta(this.label, this.nilai, {this.warna = const Color(0xFF1D2A44)});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(fontSize: 10.5, color: AppColors.muted)),
+        Text(label, style: const TextStyle(fontSize: 10.5, color: Color(0xFF6F7B8F))),
         const SizedBox(height: 3),
         Text(nilai, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: warna)),
       ]),

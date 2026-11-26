@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/personalisasi.dart';
-import '../core/theme.dart';
 import '../widgets/common.dart';
 import 'main_shell.dart';
 
@@ -85,7 +84,7 @@ class _PersonalisasiScreenState extends State<PersonalisasiScreen> {
         if (didPop) Personalisasi.i.tandaiDilewati();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white, // ubah warna latar halaman ini di sini
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(22, 10, 22, 18),
@@ -94,13 +93,17 @@ class _PersonalisasiScreenState extends State<PersonalisasiScreen> {
                 if (_langkah > 0)
                   IconButton(
                     onPressed: () => setState(() => _langkah--),
-                    icon: const Icon(Icons.arrow_back_rounded),
+                    icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF1D2A44)),
                   )
                 else
                   const SizedBox(width: 48, height: 48),
                 const Spacer(),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFF00A896),
+                    textStyle: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
                   child: Text(pertama ? 'Lewati' : 'Batal'),
                 ),
               ]),
@@ -111,7 +114,7 @@ class _PersonalisasiScreenState extends State<PersonalisasiScreen> {
                     child: Container(
                       height: 5,
                       decoration: BoxDecoration(
-                        color: i <= _langkah ? AppColors.teal : AppColors.line,
+                        color: i <= _langkah ? const Color(0xFF00A896) : const Color(0xFFE6EBF0),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -135,12 +138,17 @@ class _PersonalisasiScreenState extends State<PersonalisasiScreen> {
 
   Widget _judul(String eyebrow, String judul, String sub) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Eyebrow(eyebrow, color: AppColors.teal),
+      Eyebrow(eyebrow, color: const Color(0xFF00A896)),
       const SizedBox(height: 8),
       Text(judul,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.6, height: 1.25)),
+          style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.6,
+              height: 1.25,
+              color: Color(0xFF1D2A44))),
       const SizedBox(height: 6),
-      Text(sub, style: const TextStyle(color: AppColors.muted, height: 1.45)),
+      Text(sub, style: const TextStyle(color: Color(0xFF6F7B8F), height: 1.45)),
       const SizedBox(height: 20),
     ]);
   }
@@ -159,9 +167,10 @@ class _PersonalisasiScreenState extends State<PersonalisasiScreen> {
             ),
           if (_peran == 'Orang tua') ...[
             const SizedBox(height: 10),
-            const Text('Anakmu di jenjang apa?', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+            const Text('Anakmu di jenjang apa?',
+                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: Color(0xFF1D2A44))),
             const SizedBox(height: 4),
-            const Text('Boleh pilih lebih dari satu.', style: TextStyle(fontSize: 12.5, color: AppColors.muted)),
+            const Text('Boleh pilih lebih dari satu.', style: TextStyle(fontSize: 12.5, color: Color(0xFF6F7B8F))),
             const SizedBox(height: 10),
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (final j in Personalisasi.jenjangAnakOpsi)
@@ -219,10 +228,10 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tile = Material(
-      color: pilih ? AppColors.softTeal : Colors.white,
+      color: pilih ? const Color(0xFFE4F7F4) : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: BorderSide(color: pilih ? AppColors.teal : AppColors.line, width: pilih ? 1.6 : 1),
+        side: BorderSide(color: pilih ? const Color(0xFF00A896) : const Color(0xFFE6EBF0), width: pilih ? 1.6 : 1),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -231,18 +240,18 @@ class _Tile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
           child: Row(mainAxisSize: lebar ? MainAxisSize.max : MainAxisSize.min, children: [
             if (icon != null) ...[
-              Icon(icon, size: 21, color: pilih ? AppColors.teal : AppColors.muted),
+              Icon(icon, size: 21, color: pilih ? const Color(0xFF00A896) : const Color(0xFF6F7B8F)),
               const SizedBox(width: 11),
             ],
             Flexible(
               child: Text(label,
                   style: TextStyle(
-                      fontSize: 14, fontWeight: pilih ? FontWeight.w800 : FontWeight.w600, color: AppColors.ink)),
+                      fontSize: 14, fontWeight: pilih ? FontWeight.w800 : FontWeight.w600, color: const Color(0xFF1D2A44))),
             ),
             if (lebar) const Spacer(),
             if (pilih) ...[
               const SizedBox(width: 8),
-              const Icon(Icons.check_circle_rounded, size: 19, color: AppColors.teal),
+              const Icon(Icons.check_circle_rounded, size: 19, color: Color(0xFF00A896)),
             ],
           ]),
         ),

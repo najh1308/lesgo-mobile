@@ -6,7 +6,6 @@ import 'package:latlong2/latlong.dart';
 import '../core/api_client.dart';
 import '../core/app_settings.dart';
 import '../core/format.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../services/bimbel_service.dart';
 import '../services/location_service.dart';
@@ -158,6 +157,10 @@ class _SearchScreenState extends State<SearchScreen> {
     final hasil = await showModalBottomSheet<_Opsi<T>>(
       context: context,
       backgroundColor: Colors.white,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
       builder: (c) => SafeArea(
         child: ListView(
           shrinkWrap: true,
@@ -165,11 +168,21 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             Text(
               judul,
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1D2A44),
+              ),
             ),
             const SizedBox(height: 8),
             for (final o in opsi)
-              ListTile(title: Text(o.label), onTap: () => Navigator.pop(c, o)),
+              ListTile(
+                title: Text(
+                  o.label,
+                  style: const TextStyle(color: Color(0xFF1D2A44)),
+                ),
+                onTap: () => Navigator.pop(c, o),
+              ),
           ],
         ),
       ),
@@ -248,6 +261,11 @@ class _SearchScreenState extends State<SearchScreen> {
   Future<void> _panelFilter() async {
     final aksi = await showModalBottomSheet<VoidCallback>(
       context: context,
+      backgroundColor: Colors.white,
+      showDragHandle: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
       builder: (c) => SafeArea(
         child: ListView(
           shrinkWrap: true,
@@ -266,13 +284,14 @@ class _SearchScreenState extends State<SearchScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
+                          color: Color(0xFF1D2A44),
                         ),
                       ),
                       Text(
                         'Temukan bimbel yang paling sesuai.',
                         style: TextStyle(
                           fontSize: 12.5,
-                          color: AppColors.muted,
+                          color: Color(0xFF6F7B8F),
                         ),
                       ),
                     ],
@@ -324,6 +343,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 14,
+                    color: Color(0xFF1D2A44),
                   ),
                 ),
                 trailing: Row(
@@ -332,13 +352,13 @@ class _SearchScreenState extends State<SearchScreen> {
                     Text(
                       f.$2,
                       style: const TextStyle(
-                        color: AppColors.teal,
+                        color: Color(0xFF00A896),
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     const Icon(
                       Icons.chevron_right_rounded,
-                      color: AppColors.muted,
+                      color: Color(0xFF6F7B8F),
                     ),
                   ],
                 ),
@@ -347,6 +367,19 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(height: 8),
             OutlinedButton(
               onPressed: () => Navigator.pop(c, _resetFilter),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF0F4C81),
+                backgroundColor: Colors.white,
+                minimumSize: const Size.fromHeight(52),
+                side: const BorderSide(color: Color(0xFFE6EBF0)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               child: const Text('Hapus semua filter'),
             ),
           ],
@@ -358,73 +391,98 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const PageHeader(
-          title: 'Temukan bimbel',
-          subtitle: 'Belajar terbaik, di sekitar kamu',
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
-          child: Row(
-            children: [
-              Expanded(
-                child: SizedBox(
-                  height: 48,
-                  child: TextField(
-                    controller: _q,
-                    onChanged: _tundaMuat,
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (_) => _muat(),
-                    style: const TextStyle(fontSize: 14),
-                    decoration: const InputDecoration(
-                      hintText: 'Cari bimbel atau mata pelajaran',
-                      contentPadding: EdgeInsets.zero,
-                      prefixIcon: Icon(
-                        Icons.search_rounded,
-                        color: AppColors.muted,
-                        size: 21,
+    const inputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(14)),
+      borderSide: BorderSide(color: Color(0xFFE6EBF0)),
+    );
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const PageHeader(
+            title: 'Temukan bimbel',
+            subtitle: 'Belajar terbaik, di sekitar kamu',
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 48,
+                    child: TextField(
+                      controller: _q,
+                      onChanged: _tundaMuat,
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (_) => _muat(),
+                      cursorColor: const Color(0xFF0F4C81),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF1D2A44),
+                      ),
+                      decoration: const InputDecoration(
+                        hintText: 'Cari bimbel atau mata pelajaran',
+                        hintStyle: TextStyle(
+                          color: Color(0xFF8590A0),
+                          fontSize: 14,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: EdgeInsets.zero,
+                        border: inputBorder,
+                        enabledBorder: inputBorder,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(14)),
+                          borderSide: BorderSide(
+                            color: Color(0xFF00A896),
+                            width: 1.6,
+                          ),
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          color: Color(0xFF6F7B8F),
+                          size: 21,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 9),
-              Material(
-                color: AppColors.indigo,
-                borderRadius: BorderRadius.circular(14),
-                child: InkWell(
+                const SizedBox(width: 9),
+                Material(
+                  color: const Color(0xFF0F4C81),
                   borderRadius: BorderRadius.circular(14),
-                  onTap: _panelFilter,
-                  child: SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        const Icon(Icons.tune_rounded, color: Colors.white),
-                        if (_adaFilter)
-                          Positioned(
-                            right: 10,
-                            top: 10,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: AppColors.coral,
-                                shape: BoxShape.circle,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: _panelFilter,
+                    child: SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          const Icon(Icons.tune_rounded, color: Colors.white),
+                          if (_adaFilter)
+                            Positioned(
+                              right: 10,
+                              top: 10,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFF4A261),
+                                  shape: BoxShape.circle,
+                                ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
         SizedBox(
           height: 52,
           child: ListView(
@@ -479,7 +537,7 @@ class _SearchScreenState extends State<SearchScreen> {
           child: Container(
             padding: const EdgeInsets.fromLTRB(12, 4, 4, 4),
             decoration: BoxDecoration(
-              color: AppColors.softBlue,
+              color: const Color(0xFFEAF2F8),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -487,7 +545,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 const Icon(
                   Icons.my_location_rounded,
                   size: 17,
-                  color: AppColors.indigo,
+                  color: Color(0xFF0F4C81),
                 ),
                 const SizedBox(width: 7),
                 Expanded(
@@ -505,13 +563,15 @@ class _SearchScreenState extends State<SearchScreen> {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: AppColors.indigo,
+                      color: Color(0xFF0F4C81),
                     ),
                   ),
                 ),
                 TextButton(
                   onPressed: () => tampilPilihLokasi(context),
                   style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFF00A896),
+                    textStyle: const TextStyle(fontWeight: FontWeight.w700),
                     visualDensity: VisualDensity.compact,
                   ),
                   child: const Text('Ubah', style: TextStyle(fontSize: 12)),
@@ -537,6 +597,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         style: const TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w800,
+                          color: Color(0xFF1D2A44),
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -546,13 +607,13 @@ class _SearchScreenState extends State<SearchScreen> {
                             'Diurutkan: ${_labelUrut[_urut]}',
                             style: const TextStyle(
                               fontSize: 11.5,
-                              color: AppColors.muted,
+                              color: Color(0xFF6F7B8F),
                             ),
                           ),
                           const Icon(
                             Icons.expand_more_rounded,
                             size: 16,
-                            color: AppColors.muted,
+                            color: Color(0xFF6F7B8F),
                           ),
                         ],
                       ),
@@ -570,11 +631,12 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
         Expanded(child: _isi()),
       ],
+    ),
     );
   }
 
   Widget _isi() {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) return const Center(child: CircularProgressIndicator(color: Color(0xFF00A896)));
     if (_error != null) return ErrorView(message: _error!, onRetry: _muat);
     if (_items.isEmpty) {
       return const EmptyView(
@@ -590,6 +652,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _daftarView() {
     return RefreshIndicator(
+      color: const Color(0xFF0F4C81),
+      backgroundColor: Colors.white,
       onRefresh: _muat,
       child: ListView.separated(
         padding: const EdgeInsets.fromLTRB(18, 4, 18, 20),
@@ -656,10 +720,10 @@ class _Chip extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: Material(
-        color: aktif ? AppColors.softTeal : Colors.white,
+        color: aktif ? const Color(0xFFE4F7F4) : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: aktif ? AppColors.teal : AppColors.line),
+          side: BorderSide(color: aktif ? const Color(0xFF00A896) : const Color(0xFFE6EBF0)),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
@@ -673,7 +737,7 @@ class _Chip extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: aktif ? FontWeight.w700 : FontWeight.w500,
-                  color: aktif ? AppColors.teal : AppColors.ink,
+                  color: aktif ? const Color(0xFF00A896) : const Color(0xFF1D2A44),
                 ),
               ),
             ),

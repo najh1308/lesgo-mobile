@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
-import '../core/theme.dart';
 import '../services/location_service.dart';
 import 'common.dart';
 
@@ -132,13 +131,18 @@ class _KompasBimbelState extends State<KompasBimbel> {
               children: [
                 const Text(
                   'Kompas ke Bimbel',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1D2A44),
+                  ),
                 ),
                 const SizedBox(height: 4),
                 if (bearing != null)
                   Text(
                     'Bimbel ada di arah ${_arahMataAngin(bearing)} (${bearing.round()}°) dari '
                     '$_ketLokasi.',
+                    style: const TextStyle(color: Color(0xFF1D2A44)),
                   ),
                 const SizedBox(height: 4),
                 Text(
@@ -147,7 +151,7 @@ class _KompasBimbelState extends State<KompasBimbel> {
                       : 'Pegang HP mendatar. Jauhkan dari magnet atau logam. Jika jarum melenceng, gerakkan HP membentuk angka 8.',
                   style: const TextStyle(
                     fontSize: 12.5,
-                    color: AppColors.muted,
+                    color: Color(0xFF6F7B8F),
                   ),
                 ),
               ],
@@ -162,17 +166,20 @@ class _KompasBimbelState extends State<KompasBimbel> {
     final az = _azimut, bearing = _bearing;
     if (_tidakAda || az == null || bearing == null) {
       return CircleAvatar(
-        backgroundColor: AppColors.line,
+        backgroundColor: const Color(0xFFE6EBF0),
         child: _tidakAda
             ? const Icon(
                 Icons.explore_off_outlined,
-                color: AppColors.muted,
+                color: Color(0xFF6F7B8F),
                 size: 36,
               )
             : const SizedBox(
                 width: 22,
                 height: 22,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Color(0xFF00A896),
+                ),
               ),
       );
     }
@@ -183,9 +190,9 @@ class _KompasBimbelState extends State<KompasBimbel> {
         Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: AppColors.primary.withAlpha(18),
+            color: const Color(0x120F4C81),
             border: Border.all(
-              color: AppColors.primary.withAlpha(60),
+              color: const Color(0x3C0F4C81),
               width: 2,
             ),
           ),
@@ -202,7 +209,7 @@ class _KompasBimbelState extends State<KompasBimbel> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.danger,
+                  color: Color(0xFFE5484D),
                 ),
               ),
             ),
@@ -213,7 +220,7 @@ class _KompasBimbelState extends State<KompasBimbel> {
           child: const Icon(
             Icons.navigation_rounded,
             size: 52,
-            color: AppColors.primary,
+            color: Color(0xFF0F4C81),
           ),
         ),
       ],

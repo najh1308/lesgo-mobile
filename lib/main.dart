@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'core/api_client.dart';
 import 'core/app_settings.dart';
 import 'core/local_db.dart';
-import 'core/theme.dart';
 import 'models/models.dart';
 import 'screens/daftar_screen.dart';
 import 'screens/detail_screen.dart';
@@ -22,11 +21,11 @@ import 'screens/personalisasi_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await LocalDb.init(); // Hive: database lokal
-  await LocationService.muatTersimpan(); // lokasi pilihan pengguna (jika ada)
-  await ApiClient.init(); // Supabase: database online
+  await LocalDb.init(); 
+  await LocationService.muatTersimpan(); 
+  await ApiClient.init(); 
   await NotifikasiService.init();
-  await AppSettings.i.muatLokal(); // mata uang & zona dari Hive
+  await AppSettings.i.muatLokal(); 
   runApp(const GeoLearnApp());
 }
 
@@ -38,7 +37,6 @@ class GeoLearnApp extends StatelessWidget {
     return MaterialApp(
       title: 'GeoLearn',
       debugShowCheckedModeBanner: false,
-      theme: buildTheme(),
       navigatorKey: navigatorKey,
       initialRoute: '/',
       onGenerateRoute: _route,

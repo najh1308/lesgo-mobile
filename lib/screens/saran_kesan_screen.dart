@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../core/api_client.dart';
 import '../core/format.dart';
-import '../core/theme.dart';
 import '../widgets/common.dart';
 
 class SaranKesanScreen extends StatefulWidget {
@@ -62,14 +61,29 @@ class _SaranKesanScreenState extends State<SaranKesanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Saran & kesan')),
+      backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+      appBar: AppBar(
+        title: const Text('Saran & kesan'),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF1D2A44),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleTextStyle: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF1D2A44),
+        ),
+        shape: const Border(bottom: BorderSide(color: Color(0xFFE6EBF0))),
+      ),
       body: ListView(padding: const EdgeInsets.fromLTRB(20, 4, 20, 28), children: [
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: AppColors.indigo, borderRadius: BorderRadius.circular(18)),
+          decoration: BoxDecoration(color: const Color(0xFF0F4C81), borderRadius: BorderRadius.circular(18)),
           child: const Row(children: [
-            IconBox(Icons.rate_review_outlined, bg: Colors.white, fg: AppColors.indigo, size: 44),
+            IconBox(Icons.rate_review_outlined, bg: Colors.white, fg: Color(0xFF0F4C81), size: 44),
             SizedBox(width: 12),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -85,11 +99,11 @@ class _SaranKesanScreenState extends State<SaranKesanScreen> {
           ]),
         ),
         const SizedBox(height: 20),
-        const Text('Saran', style: TextStyle(fontWeight: FontWeight.w700)),
+        const Text('Saran', style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF1D2A44))),
         const SizedBox(height: 6),
         AppField(controller: _saran, hint: 'Tulis saranmu', icon: Icons.lightbulb_outline, maxLines: 4),
         const SizedBox(height: 14),
-        const Text('Kesan', style: TextStyle(fontWeight: FontWeight.w700)),
+        const Text('Kesan', style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF1D2A44))),
         const SizedBox(height: 6),
         AppField(controller: _kesan, hint: 'Tulis kesanmu', icon: Icons.favorite_border, maxLines: 4),
         const SizedBox(height: 18),
@@ -102,11 +116,12 @@ class _SaranKesanScreenState extends State<SaranKesanScreen> {
             padding: const EdgeInsets.only(bottom: 10),
             child: Panel(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(Fmt.tanggalJam(r['created_at'].toString()), style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+                Text(Fmt.tanggalJam(r['created_at'].toString()),
+                    style: const TextStyle(fontSize: 12, color: Color(0xFF6F7B8F))),
                 const SizedBox(height: 6),
-                Text('Saran: ${r['saran']}'),
+                Text('Saran: ${r['saran']}', style: const TextStyle(color: Color(0xFF1D2A44))),
                 const SizedBox(height: 4),
-                Text('Kesan: ${r['kesan']}'),
+                Text('Kesan: ${r['kesan']}', style: const TextStyle(color: Color(0xFF1D2A44))),
               ]),
             ),
           ),

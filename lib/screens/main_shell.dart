@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
 import '../services/notifikasi_service.dart';
 import 'aktivitas_screen.dart';
 import 'belajar_screen.dart';
@@ -68,6 +67,7 @@ class _MainShellState extends State<MainShell> {
     return ValueListenableBuilder<int>(
       valueListenable: ShellController.tab,
       builder: (context, index, _) => Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
         body: IndexedStack(
           index: index,
           children: const [
@@ -107,7 +107,7 @@ class _BottomNav extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: AppColors.line)),
+        border: Border(top: BorderSide(color: Color(0xFFE6EBF0))),
       ),
       child: SafeArea(
         top: false,
@@ -126,20 +126,20 @@ class _BottomNav extends StatelessWidget {
                           width: 24,
                           height: 3,
                           decoration: const BoxDecoration(
-                            color: AppColors.teal,
+                            color: Color(0xFF00A896),
                             borderRadius: BorderRadius.vertical(bottom: Radius.circular(4)),
                           ),
                         ),
                       ),
                     Column(mainAxisSize: MainAxisSize.min, children: [
                       Icon(i == index ? _items[i].$2 : _items[i].$1,
-                          size: 23, color: i == index ? AppColors.teal : const Color(0xFF8C96A6)),
+                          size: 23, color: i == index ? const Color(0xFF00A896) : const Color(0xFF8C96A6)),
                       const SizedBox(height: 3),
                       Text(_items[i].$3,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: i == index ? FontWeight.w700 : FontWeight.w500,
-                            color: i == index ? AppColors.teal : const Color(0xFF8C96A6),
+                            color: i == index ? const Color(0xFF00A896) : const Color(0xFF8C96A6),
                           )),
                     ]),
                   ]),

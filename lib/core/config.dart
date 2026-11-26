@@ -4,7 +4,6 @@ class Config {
   /// Ambil dari Supabase: Project Settings > API Keys / Data API.
   /// Publishable key (atau anon key) AMAN ditaruh di aplikasi karena semua tabel
   /// dikunci; aplikasi hanya bisa memanggil fungsi api_* yang memeriksa token login.
-  /// JANGAN pernah menaruh secret key / service_role key di sini.
   static const String supabaseUrl =
       String.fromEnvironment('SUPABASE_URL', defaultValue: 'https://zxmdlqqcssfbtvcasdsd.supabase.co');
   static const String supabaseKey =

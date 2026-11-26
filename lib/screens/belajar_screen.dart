@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
 import '../services/game_service.dart';
 import '../widgets/common.dart';
 
-/// Tab Belajar (Ruang Belajar): Chatbot Geo (LLM) dan mini game Hitung Cepat.
+/// Tab Belajar (Chatbot & Mini Game)
 class BelajarScreen extends StatefulWidget {
   const BelajarScreen({super.key});
 
@@ -33,58 +32,62 @@ class _BelajarScreenState extends State<BelajarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      PageHeader(
-        title: 'Ruang Belajar',
-        subtitle: 'Pilih cara belajar favoritmu',
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
-          decoration: BoxDecoration(color: AppColors.softCoral, borderRadius: BorderRadius.circular(12)),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            const Icon(Icons.emoji_events_rounded, size: 17, color: Color(0xFFD36F26)),
-            const SizedBox(width: 4),
-            Text('$_terbaik',
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFFD36F26))),
-            const Text(' skor', style: TextStyle(fontSize: 11.5, color: AppColors.muted)),
-          ]),
-        ),
-      ),
-      Expanded(
-        child: ListView(padding: const EdgeInsets.all(18), children: [
-          _hero(),
-          const SizedBox(height: 18),
-          _kartuAi(),
-          const SizedBox(height: 14),
-          _kartuGame(),
-          const SizedBox(height: 14),
-          Container(
-            padding: const EdgeInsets.all(13),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: const Color(0xFFBFCAD4)),
-            ),
-            child: const Row(children: [
-              Icon(Icons.screen_rotation_rounded, color: AppColors.teal),
-              SizedBox(width: 11),
-              Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Main dengan gerakan', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
-                  SizedBox(height: 2),
-                  Text('Miringkan HP ke kanan untuk "Benar", ke kiri untuk "Salah". Sensor akselerometer membaca gerakanmu.',
-                      style: TextStyle(fontSize: 11.5, color: AppColors.muted, height: 1.4)),
-                ]),
-              ),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+      body: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        PageHeader(
+          title: 'Ruang Belajar',
+          subtitle: 'Pilih cara belajar favoritmu',
+          trailing: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
+            decoration: BoxDecoration(color: const Color(0xFFFFF1E6), borderRadius: BorderRadius.circular(12)),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              const Icon(Icons.emoji_events_rounded, size: 17, color: Color(0xFFD36F26)),
+              const SizedBox(width: 4),
+              Text('$_terbaik',
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFFD36F26))),
+              const Text(' skor', style: TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F))),
             ]),
           ),
-        ]),
-      ),
-    ]);
+        ),
+        Expanded(
+          child: ListView(padding: const EdgeInsets.all(18), children: [
+            _hero(),
+            const SizedBox(height: 18),
+            _kartuAi(),
+            const SizedBox(height: 14),
+            _kartuGame(),
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(13),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(color: const Color(0xFFBFCAD4)),
+              ),
+              child: const Row(children: [
+                Icon(Icons.screen_rotation_rounded, color: Color(0xFF00A896)),
+                SizedBox(width: 11),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('Main dengan gerakan',
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xFF1D2A44))),
+                    SizedBox(height: 2),
+                    Text('Miringkan HP ke kanan untuk "Benar", ke kiri untuk "Salah". Sensor akselerometer membaca gerakanmu.',
+                        style: TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F), height: 1.4)),
+                  ]),
+                ),
+              ]),
+            ),
+          ]),
+        ),
+      ]),
+    );
   }
 
   Widget _hero() {
     return Container(
       clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(color: AppColors.indigo, borderRadius: BorderRadius.circular(20)),
+      decoration: BoxDecoration(color: const Color(0xFF0F4C81), borderRadius: BorderRadius.circular(20)),
       child: Stack(children: [
         Positioned(
           right: -4,
@@ -110,13 +113,13 @@ class _BelajarScreenState extends State<BelajarScreen> {
 
   Widget _kartuAi() {
     return _KartuFitur(
-      color: AppColors.softTeal,
+      color: const Color(0xFFE4F7F4),
       onTap: () => _buka('/tutor'),
       child: Row(children: [
         Container(
           width: 88,
           height: 108,
-          decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(18)),
+          decoration: BoxDecoration(color: const Color(0xFF00A896), borderRadius: BorderRadius.circular(18)),
           child: Stack(alignment: Alignment.center, children: [
             const Icon(Icons.smart_toy_outlined, size: 50, color: Colors.white),
             Positioned(
@@ -124,9 +127,9 @@ class _BelajarScreenState extends State<BelajarScreen> {
               top: 8,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                decoration: BoxDecoration(color: AppColors.coral, borderRadius: BorderRadius.circular(6)),
+                decoration: BoxDecoration(color: const Color(0xFFF4A261), borderRadius: BorderRadius.circular(6)),
                 child: const Text('AI',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.slate)),
+                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Color(0xFF1D2A44))),
               ),
             ),
           ]),
@@ -134,14 +137,14 @@ class _BelajarScreenState extends State<BelajarScreen> {
         const SizedBox(width: 14),
         const Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Eyebrow('ASISTEN CERDAS 24/7', color: AppColors.teal),
+            Eyebrow('ASISTEN CERDAS 24/7', color: Color(0xFF00A896)),
             SizedBox(height: 6),
-            Text('Chatbot Geo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.ink)),
+            Text('Chatbot Geo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1D2A44))),
             SizedBox(height: 6),
             Text('Tanyakan PR, pahami konsep langkah demi langkah, atau minta tips belajar.',
-                style: TextStyle(fontSize: 12, color: AppColors.muted, height: 1.45)),
+                style: TextStyle(fontSize: 12, color: Color(0xFF6F7B8F), height: 1.45)),
             SizedBox(height: 12),
-            _Ajak('Mulai bertanya', AppColors.indigo),
+            _Ajak('Mulai bertanya', Color(0xFF0F4C81)),
           ]),
         ),
       ]),
@@ -150,7 +153,7 @@ class _BelajarScreenState extends State<BelajarScreen> {
 
   Widget _kartuGame() {
     return _KartuFitur(
-      color: AppColors.slate,
+      color: const Color(0xFF1D2A44),
       onTap: () => _buka('/game'),
       child: Row(children: [
         Expanded(
@@ -180,13 +183,13 @@ class _BelajarScreenState extends State<BelajarScreen> {
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.coral.withAlpha(102)),
+                border: Border.all(color: const Color(0x66F4A261)),
               ),
               alignment: Alignment.center,
               child: const Text('42', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white)),
             ),
-            const Positioned(left: -5, top: 5, child: _Bulatan('×', AppColors.coral, AppColors.slate)),
-            const Positioned(right: -4, bottom: 2, child: _Bulatan('÷', AppColors.teal, Colors.white)),
+            const Positioned(left: -5, top: 5, child: _Bulatan('×', Color(0xFFF4A261), Color(0xFF1D2A44))),
+            const Positioned(right: -4, bottom: 2, child: _Bulatan('÷', Color(0xFF00A896), Colors.white)),
           ]),
         ),
       ]),

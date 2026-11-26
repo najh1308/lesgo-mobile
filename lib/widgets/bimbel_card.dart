@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/format.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 import 'common.dart';
 
@@ -32,10 +31,10 @@ class BimbelCard extends StatelessWidget {
           Expanded(
             child: Wrap(spacing: 5, runSpacing: 4, children: [
               if (badge != null) Pill(badge!),
-              if (b.jenjang.isNotEmpty) Pill(b.jenjang.join(' · '), color: AppColors.indigo),
+              if (b.jenjang.isNotEmpty) Pill(b.jenjang.join(' · '), color: const Color(0xFF0F4C81)),
               for (final m in b.mode)
                 Pill(m == 'online' ? 'Online' : 'Offline',
-                    color: m == 'online' ? AppColors.teal : AppColors.coralDark),
+                    color: m == 'online' ? const Color(0xFF00A896) : const Color(0xFFC56D2F)),
             ]),
           ),
           if (onFavorit != null)
@@ -45,7 +44,7 @@ class BimbelCard extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(2),
                 child: Icon(b.isFavorit ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                    size: 21, color: b.isFavorit ? AppColors.danger : AppColors.muted),
+                    size: 21, color: b.isFavorit ? const Color(0xFFE5484D) : const Color(0xFF6F7B8F)),
               ),
             ),
         ]),
@@ -53,24 +52,24 @@ class BimbelCard extends StatelessWidget {
         Text(b.nama,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.ink, height: 1.25)),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: Color(0xFF1D2A44), height: 1.25)),
         const SizedBox(height: 4),
         Row(children: [
-          const Icon(Icons.location_on_outlined, size: 14, color: AppColors.muted),
+          const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF6F7B8F)),
           const SizedBox(width: 3),
           Expanded(
             child: Text(
               [if (b.kota.isNotEmpty) b.kota, if (b.jarakKm != null) Fmt.jarak(b.jarakKm)].join(' · '),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 12, color: AppColors.muted),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF6F7B8F)),
             ),
           ),
         ]),
         if (b.mapel.isNotEmpty) ...[
           const SizedBox(height: 3),
           Text(b.mapel,
-              maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.muted)),
+              maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: Color(0xFF6F7B8F))),
         ],
         const SizedBox(height: 10),
         Row(children: [
@@ -80,7 +79,7 @@ class BimbelCard extends StatelessWidget {
             child: Text('Mulai ${Fmt.harga(b.hargaMulai)}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.indigo)),
+                style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: Color(0xFF0F4C81))),
           ),
         ]),
       ]),

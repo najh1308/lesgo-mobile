@@ -1,9 +1,3 @@
-// Supabase Edge Function: tutor-ai
-// Menerima { token, pesan: [{ role: 'user' | 'ai', teks }], lat?, lng? } dari aplikasi,
-// memeriksa token login lewat fungsi api_me, mengambil data bimbel (untuk rekomendasi),
-// lalu meneruskan pertanyaan ke LLM:
-// Groq (secret GROQ_API_KEY) jika diisi, selain itu Google Gemini (secret GEMINI_API_KEY).
-// API key hanya disimpan sebagai secret di Supabase, tidak pernah ada di aplikasi.
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",

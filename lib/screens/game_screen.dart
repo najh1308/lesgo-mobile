@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 import '../core/api_client.dart';
-import '../core/theme.dart';
 import '../services/game_service.dart';
 import '../widgets/common.dart';
 
@@ -194,11 +193,11 @@ class _GameScreenState extends State<GameScreen> {
         _benar++;
         _beruntun++;
         _skor += 10 * _level + (_beruntun >= 3 ? 5 : 0); // bonus jika 3x benar berturut-turut
-        _kilat = AppColors.success;
+        _kilat = const Color(0xFF00A896);
       } else {
         _salah++;
         _beruntun = 0;
-        _kilat = AppColors.danger;
+        _kilat = const Color(0xFFE5484D);
       }
       _soal = _buatSoal();
       _nomorSoal++;
@@ -230,7 +229,7 @@ class _GameScreenState extends State<GameScreen> {
 
   // ---------- Tampilan ----------
 
-  static const _gelap = AppColors.slate;
+  static const _gelap = Color(0xFF1D2A44);
 
   /// Warna latar yang bergantian setiap soal baru. Semua cukup gelap
   /// agar teks putih tetap mudah dibaca.
@@ -253,7 +252,7 @@ class _GameScreenState extends State<GameScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: _gelap,
+        backgroundColor: const Color(0xFF1D2A44), // ubah warna latar halaman ini di sini
         body: AnimatedContainer(
           duration: const Duration(milliseconds: 350),
           curve: Curves.easeOut,
@@ -293,14 +292,14 @@ class _GameScreenState extends State<GameScreen> {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(_fase == _Fase.awal ? 'HITUNG CEPAT' : 'LEVEL $_level',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.coral)),
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Color(0xFFF4A261))),
             const SizedBox(height: 6),
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: LinearProgressIndicator(
                 value: _fase == _Fase.main ? _sisa / _durasi : (_fase == _Fase.awal ? 1 : 0),
                 minHeight: 5,
-                color: _sisa <= 10 && _fase == _Fase.main ? AppColors.coral : AppColors.teal,
+                color: _sisa <= 10 && _fase == _Fase.main ? const Color(0xFFF4A261) : const Color(0xFF00A896),
                 backgroundColor: Colors.white.withAlpha(26),
               ),
             ),
@@ -308,7 +307,7 @@ class _GameScreenState extends State<GameScreen> {
         ),
         const SizedBox(width: 15),
         Row(children: [
-          const Icon(Icons.emoji_events_rounded, size: 16, color: AppColors.coral),
+          const Icon(Icons.emoji_events_rounded, size: 16, color: Color(0xFFF4A261)),
           const SizedBox(width: 3),
           Text('$_terbaik', style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.white)),
         ]),
@@ -338,13 +337,13 @@ class _GameScreenState extends State<GameScreen> {
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.coral.withAlpha(102)),
+                border: Border.all(color: const Color(0x66F4A261)),
               ),
               alignment: Alignment.center,
               child: const Text('6×7', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white)),
             ),
-            Positioned(left: 0, top: 8, child: _bulat('+', AppColors.coral, AppColors.slate)),
-            Positioned(right: 0, bottom: 6, child: _bulat('÷', AppColors.teal, Colors.white)),
+            Positioned(left: 0, top: 8, child: _bulat('+', const Color(0xFFF4A261), const Color(0xFF1D2A44))),
+            Positioned(right: 0, bottom: 6, child: _bulat('÷', const Color(0xFF00A896), Colors.white)),
           ]),
         ),
       ),
@@ -362,7 +361,7 @@ class _GameScreenState extends State<GameScreen> {
       const SizedBox(height: 24),
       _kartuGelap(
         child: Row(children: [
-          const Icon(Icons.screen_rotation_rounded, color: AppColors.teal),
+          const Icon(Icons.screen_rotation_rounded, color: Color(0xFF00A896)),
           const SizedBox(width: 12),
           const Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -373,7 +372,14 @@ class _GameScreenState extends State<GameScreen> {
                   style: TextStyle(fontSize: 12, color: _redup, height: 1.4)),
             ]),
           ),
-          Switch(value: _pakaiSensor, onChanged: (v) => setState(() => _pakaiSensor = v)),
+          Switch(
+            value: _pakaiSensor,
+            onChanged: (v) => setState(() => _pakaiSensor = v),
+            thumbColor: WidgetStateProperty.all(Colors.white),
+            trackColor: WidgetStateProperty.resolveWith(
+                (s) => s.contains(WidgetState.selected) ? const Color(0xFF00A896) : const Color(0xFFE6EBF0)),
+            trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+          ),
         ]),
       ),
       const SizedBox(height: 28),
@@ -392,7 +398,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _layarMain() {
-    final warnaWaktu = _sisa <= 10 ? AppColors.coral : AppColors.teal;
+    final warnaWaktu = _sisa <= 10 ? const Color(0xFFF4A261) : const Color(0xFF00A896);
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       color: _kilat?.withAlpha(45) ?? Colors.transparent,
@@ -441,14 +447,14 @@ class _GameScreenState extends State<GameScreen> {
               const SizedBox(height: 8),
               if (_beruntun >= 3)
                 Text('$_beruntun benar berturut-turut! +5 bonus',
-                    style: const TextStyle(color: AppColors.teal, fontWeight: FontWeight.w800)),
+                    style: const TextStyle(color: Color(0xFF00A896), fontWeight: FontWeight.w800)),
               const Spacer(),
               if (_pakaiSensor) _indikatorMiring(),
               const SizedBox(height: 16),
               Row(children: [
-                Expanded(child: _tombolJawab('Salah', Icons.close_rounded, AppColors.danger, () => _jawab(false))),
+                Expanded(child: _tombolJawab('Salah', Icons.close_rounded, const Color(0xFFE5484D), () => _jawab(false))),
                 const SizedBox(width: 12),
-                Expanded(child: _tombolJawab('Benar', Icons.check_rounded, AppColors.teal, () => _jawab(true))),
+                Expanded(child: _tombolJawab('Benar', Icons.check_rounded, const Color(0xFF00A896), () => _jawab(true))),
               ]),
             ]),
           ),
@@ -498,7 +504,7 @@ class _GameScreenState extends State<GameScreen> {
           Spacer(),
           Icon(Icons.screen_rotation_rounded, size: 16, color: _redup),
           Spacer(),
-          Text('Benar →', style: TextStyle(color: AppColors.teal, fontWeight: FontWeight.w800, fontSize: 12.5)),
+          Text('Benar →', style: TextStyle(color: Color(0xFF00A896), fontWeight: FontWeight.w800, fontSize: 12.5)),
         ]),
         const SizedBox(height: 8),
         Container(
@@ -508,7 +514,7 @@ class _GameScreenState extends State<GameScreen> {
             alignment: Alignment(posisi, 0),
             child: Container(
               width: 28,
-              decoration: BoxDecoration(color: AppColors.coral, borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: const Color(0xFFF4A261), borderRadius: BorderRadius.circular(8)),
             ),
           ),
         ),
@@ -520,14 +526,14 @@ class _GameScreenState extends State<GameScreen> {
     final total = _benar + _salah;
     final akurasi = total == 0 ? 0 : (_benar * 100 / total).round();
     return ListView(padding: const EdgeInsets.fromLTRB(24, 16, 24, 24), children: [
-      const Icon(Icons.emoji_events_rounded, size: 72, color: AppColors.coral),
+      const Icon(Icons.emoji_events_rounded, size: 72, color: Color(0xFFF4A261)),
       const SizedBox(height: 8),
       const Text('Waktu habis!',
           textAlign: TextAlign.center, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
       const SizedBox(height: 4),
       Text('$_skor poin',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: AppColors.teal)),
+          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w800, color: Color(0xFF00A896))),
       const SizedBox(height: 14),
       _kartuGelap(
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
@@ -551,7 +557,8 @@ class _GameScreenState extends State<GameScreen> {
       const Text('Papan Peringkat', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800, color: Colors.white)),
       const SizedBox(height: 10),
       if (_papan == null && _papanError == null)
-        const Center(child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator())),
+        const Center(
+            child: Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(color: Color(0xFF00A896)))),
       if (_papanError != null) Text(_papanError!, style: const TextStyle(color: _redup)),
       if (_papan != null && _papan!.isEmpty) const Text('Belum ada skor.', style: TextStyle(color: _redup)),
       if (_papan != null)
@@ -564,19 +571,19 @@ class _GameScreenState extends State<GameScreen> {
                   width: 30,
                   height: 30,
                   decoration: BoxDecoration(
-                    color: p.peringkat <= 3 ? AppColors.coral : Colors.white.withAlpha(26),
+                    color: p.peringkat <= 3 ? const Color(0xFFF4A261) : Colors.white.withAlpha(26),
                     shape: BoxShape.circle,
                   ),
                   alignment: Alignment.center,
                   child: Text('${p.peringkat}',
                       style: TextStyle(
-                          fontWeight: FontWeight.w800, color: p.peringkat <= 3 ? AppColors.slate : Colors.white)),
+                          fontWeight: FontWeight.w800, color: p.peringkat <= 3 ? const Color(0xFF1D2A44) : Colors.white)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(p.nama, style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.white)),
                 ),
-                Text('${p.skor}', style: const TextStyle(fontWeight: FontWeight.w800, color: AppColors.teal)),
+                Text('${p.skor}', style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF00A896))),
               ]),
             ),
           ),

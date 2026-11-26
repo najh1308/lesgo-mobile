@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../core/api_client.dart';
-import '../core/theme.dart';
 import '../services/auth_service.dart';
 import '../widgets/common.dart';
 
@@ -67,8 +66,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(shape: const Border()),
+      backgroundColor: Colors.white, // ubah warna latar halaman ini di sini
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF1D2A44),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        shape: const Border(),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -76,10 +82,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
             const Align(alignment: Alignment.centerLeft, child: Brand()),
             const SizedBox(height: 22),
             const Text('Buat akun baru',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.8, color: AppColors.ink)),
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.8, color: Color(0xFF1D2A44))),
             const SizedBox(height: 6),
             const Text('Daftar untuk mulai menemukan bimbel terbaik di sekitarmu.',
-                style: TextStyle(color: AppColors.muted)),
+                style: TextStyle(color: Color(0xFF6F7B8F))),
             const SizedBox(height: 24),
             AppField(controller: _nama, hint: 'Nama', icon: Icons.person_outline, errorText: _err['nama']),
             const SizedBox(height: 12),
@@ -114,11 +120,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             PrimaryButton(label: 'Daftar', onPressed: _daftar, loading: _loading),
             const SizedBox(height: 16),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Text('Sudah punya akun? ', style: TextStyle(color: AppColors.muted)),
+              const Text('Sudah punya akun? ', style: TextStyle(color: Color(0xFF6F7B8F))),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
                 child: const Text('Masuk di sini',
-                    style: TextStyle(color: AppColors.teal, fontWeight: FontWeight.w800)),
+                    style: TextStyle(color: Color(0xFF00A896), fontWeight: FontWeight.w800)),
               ),
             ]),
           ]),

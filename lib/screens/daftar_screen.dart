@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../core/api_client.dart';
 import '../core/app_settings.dart';
 import '../core/format.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../services/auth_service.dart';
 import '../services/pendaftaran_service.dart';
@@ -92,6 +91,17 @@ class _DaftarScreenState extends State<DaftarScreen> {
       helpText: w == null
           ? 'Pilih tanggal mulai'
           : 'Pilih tanggal mulai (kelas hari ${j.hari})',
+      builder: (context, child) => Theme(
+        data: ThemeData.light().copyWith(
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFF0F4C81),
+            onPrimary: Colors.white,
+            surface: Colors.white,
+            onSurface: Color(0xFF1D2A44),
+          ),
+        ),
+        child: child!,
+      ),
     );
     if (dipilih != null && mounted) setState(() => _mulai = dipilih);
   }
@@ -137,15 +147,49 @@ class _DaftarScreenState extends State<DaftarScreen> {
     ('tunai', 'Tunai di tempat', Icons.payments_outlined),
   ];
 
+  static InputDecoration _dropdownDeco(String label) {
+    const border = OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(14)),
+      borderSide: BorderSide(color: Color(0xFFE6EBF0)),
+    );
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: Colors.white,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: border,
+      enabledBorder: border,
+      focusedBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(14)),
+        borderSide: BorderSide(color: Color(0xFF00A896), width: 1.6),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final p = widget.program;
     return Scaffold(
-      appBar: AppBar(title: const Text('Konfirmasi pendaftaran')),
+      backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+      appBar: AppBar(
+        title: const Text('Konfirmasi pendaftaran'),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF1D2A44),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleTextStyle: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF1D2A44),
+        ),
+        shape: const Border(bottom: BorderSide(color: Color(0xFFE6EBF0))),
+      ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.line)),
+          border: Border(top: BorderSide(color: Color(0xFFE6EBF0))),
         ),
         child: SafeArea(
           top: false,
@@ -197,6 +241,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w800,
+                                  color: Color(0xFF1D2A44),
                                 ),
                               ),
                               const SizedBox(height: 2),
@@ -204,7 +249,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                                 p.nama,
                                 style: const TextStyle(
                                   fontSize: 12.5,
-                                  color: AppColors.muted,
+                                  color: Color(0xFF6F7B8F),
                                 ),
                               ),
                             ],
@@ -212,7 +257,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                         ),
                       ],
                     ),
-                    const Divider(height: 24),
+                    const Divider(height: 24, color: Color(0xFFE6EBF0)),
                     _Baris('Jenjang & mapel', '${p.jenjang} · ${p.mapel}'),
                     _Baris('Mode', p.mode == 'online' ? 'Online' : 'Offline'),
                     _Baris('Durasi', '${p.durasiMinggu} minggu'),
@@ -234,9 +279,8 @@ class _DaftarScreenState extends State<DaftarScreen> {
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: s.zona,
-                      decoration: const InputDecoration(
-                        labelText: 'Zona waktu',
-                      ),
+                      dropdownColor: Colors.white,
+                      decoration: _dropdownDeco('Zona waktu'),
                       items: [
                         for (final e in TimeUtil.zonaPilihan.entries)
                           DropdownMenuItem(value: e.key, child: Text(e.value)),
@@ -252,7 +296,8 @@ class _DaftarScreenState extends State<DaftarScreen> {
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: s.mataUang,
-                      decoration: const InputDecoration(labelText: 'Mata uang'),
+                      dropdownColor: Colors.white,
+                      decoration: _dropdownDeco('Mata uang'),
                       items: [
                         for (final m in const ['IDR', 'USD', 'EUR', 'JPY'])
                           DropdownMenuItem(value: m, child: Text(m)),
@@ -274,7 +319,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                     ' · sumber: ${s.kursSumber}. Pembayaran tetap dalam rupiah.',
                     style: const TextStyle(
                       fontSize: 12,
-                      color: AppColors.muted,
+                      color: Color(0xFF6F7B8F),
                     ),
                   ),
                 ),
@@ -296,19 +341,22 @@ class _DaftarScreenState extends State<DaftarScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.softBlue,
+                  color: const Color(0xFFEAF2F8),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
                     _Baris('Biaya program', Fmt.harga(p.hargaIdr)),
-                    const Divider(height: 20),
+                    const Divider(height: 20, color: Color(0xFFE6EBF0)),
                     Row(
                       children: [
                         const Expanded(
                           child: Text(
                             'Total pembayaran',
-                            style: TextStyle(fontWeight: FontWeight.w800),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF1D2A44),
+                            ),
                           ),
                         ),
                         Text(
@@ -316,7 +364,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                           style: const TextStyle(
                             fontSize: 19,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.indigo,
+                            color: Color(0xFF0F4C81),
                           ),
                         ),
                       ],
@@ -331,7 +379,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                   Icon(
                     Icons.verified_user_outlined,
                     size: 18,
-                    color: AppColors.teal,
+                    color: Color(0xFF00A896),
                   ),
                   SizedBox(width: 8),
                   Expanded(
@@ -339,7 +387,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                       'Pendaftaranmu akan dicatat di riwayat terverifikasi (blockchain lokal GeoLearn).',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.muted,
+                        color: Color(0xFF6F7B8F),
                         height: 1.45,
                       ),
                     ),
@@ -358,11 +406,11 @@ class _DaftarScreenState extends State<DaftarScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
-        color: dipilih ? AppColors.softTeal : Colors.white,
+        color: dipilih ? const Color(0xFFE4F7F4) : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
           side: BorderSide(
-            color: dipilih ? AppColors.teal : AppColors.line,
+            color: dipilih ? const Color(0xFF00A896) : const Color(0xFFE6EBF0),
             width: dipilih ? 1.5 : 1,
           ),
         ),
@@ -376,13 +424,16 @@ class _DaftarScreenState extends State<DaftarScreen> {
                 IconBox(
                   icon,
                   size: 36,
-                  bg: dipilih ? Colors.white : AppColors.softBlue,
+                  bg: dipilih ? Colors.white : const Color(0xFFEAF2F8),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     label,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1D2A44),
+                    ),
                   ),
                 ),
                 _Centang(dipilih),
@@ -405,10 +456,10 @@ class _DaftarScreenState extends State<DaftarScreen> {
       mulai.day + 7 * (sesi - 1),
     );
     return Material(
-      color: AppColors.softTeal,
+      color: const Color(0xFFE4F7F4),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
-        side: const BorderSide(color: AppColors.teal, width: 1.5),
+        side: const BorderSide(color: Color(0xFF00A896), width: 1.5),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
@@ -421,7 +472,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                 Icons.event_rounded,
                 size: 42,
                 bg: Colors.white,
-                fg: AppColors.teal,
+                fg: Color(0xFF00A896),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -430,7 +481,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                   children: [
                     const Text(
                       'Mulai kelas',
-                      style: TextStyle(fontSize: 11.5, color: AppColors.muted),
+                      style: TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F)),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -438,6 +489,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
+                        color: Color(0xFF1D2A44),
                       ),
                     ),
                     const SizedBox(height: 3),
@@ -445,7 +497,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                       '$sesi pertemuan mingguan · sesi terakhir ${Fmt.tanggal(Fmt.iso(terakhir))}',
                       style: const TextStyle(
                         fontSize: 11.5,
-                        color: AppColors.muted,
+                        color: Color(0xFF6F7B8F),
                         height: 1.4,
                       ),
                     ),
@@ -458,13 +510,13 @@ class _DaftarScreenState extends State<DaftarScreen> {
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.teal,
+                  color: Color(0xFF00A896),
                 ),
               ),
               const Icon(
                 Icons.chevron_right_rounded,
                 size: 18,
-                color: AppColors.teal,
+                color: Color(0xFF00A896),
               ),
             ],
           ),
@@ -481,11 +533,11 @@ class _DaftarScreenState extends State<DaftarScreen> {
       child: Opacity(
         opacity: penuh ? 0.5 : 1,
         child: Material(
-          color: dipilih ? AppColors.softTeal : Colors.white,
+          color: dipilih ? const Color(0xFFE4F7F4) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
             side: BorderSide(
-              color: dipilih ? AppColors.teal : AppColors.line,
+              color: dipilih ? const Color(0xFF00A896) : const Color(0xFFE6EBF0),
               width: dipilih ? 1.5 : 1,
             ),
           ),
@@ -504,7 +556,10 @@ class _DaftarScreenState extends State<DaftarScreen> {
                       children: [
                         Text(
                           'Setiap ${j.hari}',
-                          style: const TextStyle(fontWeight: FontWeight.w800),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF1D2A44),
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -516,13 +571,16 @@ class _DaftarScreenState extends State<DaftarScreen> {
                             j.jamSelesai,
                             zona,
                           ),
-                          style: const TextStyle(fontSize: 13),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF1D2A44),
+                          ),
                         ),
                         Text(
                           'Jam asli: ${j.jamMulai} - ${j.jamSelesai} WIB',
                           style: const TextStyle(
                             fontSize: 11.5,
-                            color: AppColors.muted,
+                            color: Color(0xFF6F7B8F),
                           ),
                         ),
                       ],
@@ -530,7 +588,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                   ),
                   Pill(
                     penuh ? 'Penuh' : 'Sisa ${j.sisa}',
-                    color: penuh ? AppColors.danger : AppColors.teal,
+                    color: penuh ? const Color(0xFFE5484D) : const Color(0xFF00A896),
                   ),
                 ],
               ),
@@ -553,9 +611,9 @@ class _Centang extends StatelessWidget {
       height: 22,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: aktif ? AppColors.teal : Colors.white,
+        color: aktif ? const Color(0xFF00A896) : Colors.white,
         border: Border.all(
-          color: aktif ? AppColors.teal : AppColors.line,
+          color: aktif ? const Color(0xFF00A896) : const Color(0xFFE6EBF0),
           width: 2,
         ),
       ),
@@ -579,14 +637,18 @@ class _Baris extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 13, color: AppColors.muted),
+            style: const TextStyle(fontSize: 13, color: Color(0xFF6F7B8F)),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               nilai,
               textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1D2A44),
+              ),
             ),
           ),
         ],
@@ -610,7 +672,7 @@ class _Langkah extends StatelessWidget {
             Expanded(
               child: Container(
                 height: 2,
-                color: i < sekarang ? AppColors.teal : AppColors.line,
+                color: i < sekarang ? const Color(0xFF00A896) : const Color(0xFFE6EBF0),
               ),
             ),
           Column(
@@ -622,12 +684,12 @@ class _Langkah extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: i < sekarang - 1
-                      ? AppColors.teal
-                      : (i == sekarang - 1 ? AppColors.indigo : Colors.white),
+                      ? const Color(0xFF00A896)
+                      : (i == sekarang - 1 ? const Color(0xFF0F4C81) : Colors.white),
                   border: Border.all(
                     color: i <= sekarang - 1
                         ? Colors.transparent
-                        : AppColors.line,
+                        : const Color(0xFFE6EBF0),
                     width: 2,
                   ),
                 ),
@@ -645,14 +707,14 @@ class _Langkah extends StatelessWidget {
                           fontWeight: FontWeight.w800,
                           color: i == sekarang - 1
                               ? Colors.white
-                              : AppColors.muted,
+                              : const Color(0xFF6F7B8F),
                         ),
                       ),
               ),
               const SizedBox(height: 4),
               Text(
                 label[i],
-                style: const TextStyle(fontSize: 10.5, color: AppColors.muted),
+                style: const TextStyle(fontSize: 10.5, color: Color(0xFF6F7B8F)),
               ),
             ],
           ),

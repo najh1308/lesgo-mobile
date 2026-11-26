@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../core/theme.dart';
-
 void showMsg(BuildContext context, String text, {bool error = false}) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(
       content: Text(text),
-      backgroundColor: error ? AppColors.danger : AppColors.slate,
+      backgroundColor: error ? const Color(0xFFE5484D) : const Color(0xFF1D2A44),
       behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ));
 }
 
@@ -28,7 +27,7 @@ class Brand extends StatelessWidget {
             fontSize: size,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.3,
-            color: light ? Colors.white : AppColors.indigo,
+            color: light ? Colors.white : const Color(0xFF0F4C81),
           )),
     ]);
   }
@@ -45,10 +44,10 @@ class BrandMark extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: light ? Colors.white : AppColors.teal,
+        color: light ? Colors.white : const Color(0xFF00A896),
         borderRadius: BorderRadius.circular(size / 3),
       ),
-      child: Icon(Icons.map_outlined, size: size * 0.62, color: light ? AppColors.indigo : Colors.white),
+      child: Icon(Icons.map_outlined, size: size * 0.62, color: light ? const Color(0xFF0F4C81) : Colors.white),
     );
   }
 }
@@ -67,17 +66,17 @@ class PageHeader extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(18, MediaQuery.paddingOf(context).top + 18, 18, 16),
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppColors.line)),
+        border: Border(bottom: BorderSide(color: Color(0xFFE6EBF0))),
       ),
       child: Row(children: [
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(title,
                 style: const TextStyle(
-                    fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.6, color: AppColors.ink)),
+                    fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.6, color: Color(0xFF1D2A44))),
             if (subtitle != null) ...[
               const SizedBox(height: 3),
-              Text(subtitle!, style: const TextStyle(fontSize: 12.5, color: AppColors.muted)),
+              Text(subtitle!, style: const TextStyle(fontSize: 12.5, color: Color(0xFF6F7B8F))),
             ],
           ]),
         ),
@@ -102,7 +101,7 @@ class SquareIconButton extends StatelessWidget {
       color: light ? Colors.white.withAlpha(31) : Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(13),
-        side: BorderSide(color: light ? Colors.white.withAlpha(46) : AppColors.line),
+        side: BorderSide(color: light ? Colors.white.withAlpha(46) : const Color(0xFFE6EBF0)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(13),
@@ -111,7 +110,7 @@ class SquareIconButton extends StatelessWidget {
           width: 42,
           height: 42,
           child: Stack(alignment: Alignment.center, children: [
-            Icon(icon, size: 21, color: light ? Colors.white : AppColors.ink),
+            Icon(icon, size: 21, color: light ? Colors.white : const Color(0xFF1D2A44)),
             if (dot)
               Positioned(
                 right: 9,
@@ -120,9 +119,9 @@ class SquareIconButton extends StatelessWidget {
                   width: 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: AppColors.coral,
+                    color: const Color(0xFFF4A261),
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.indigo),
+                    border: Border.all(color: const Color(0xFF0F4C81)),
                   ),
                 ),
               ),
@@ -155,14 +154,16 @@ class Panel extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        boxShadow: shadow ? kShadow : null,
+        boxShadow: shadow
+            ? const [BoxShadow(color: Color(0x171D2A44), blurRadius: 26, offset: Offset(0, 8))]
+            : null,
       ),
       child: Material(
         color: color,
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: shadow ? BorderSide.none : const BorderSide(color: AppColors.line),
+          side: shadow ? BorderSide.none : const BorderSide(color: Color(0xFFE6EBF0)),
         ),
         child: InkWell(
           onTap: onTap,
@@ -179,7 +180,7 @@ class IconBox extends StatelessWidget {
   final Color bg;
   final Color fg;
   final double size;
-  const IconBox(this.icon, {super.key, this.bg = AppColors.softBlue, this.fg = AppColors.indigo, this.size = 38});
+  const IconBox(this.icon, {super.key, this.bg = const Color(0xFFEAF2F8), this.fg = const Color(0xFF0F4C81), this.size = 38});
 
   @override
   Widget build(BuildContext context) {
@@ -210,6 +211,16 @@ class PrimaryButton extends StatelessWidget {
       ),
       child: ElevatedButton(
         onPressed: loading ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF00A896),
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: const Color(0xFFE6EBF0),
+          elevation: 0,
+          shadowColor: const Color(0x2E00A896),
+          minimumSize: const Size.fromHeight(52),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        ),
         child: loading
             ? const SizedBox(
                 height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
@@ -255,20 +266,36 @@ class _AppFieldState extends State<AppField> {
 
   @override
   Widget build(BuildContext context) {
+    const border = OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(14)),
+      borderSide: BorderSide(color: Color(0xFFE6EBF0)),
+    );
     return TextField(
       controller: widget.controller,
       obscureText: widget.password && _sembunyi,
       keyboardType: widget.keyboard,
       maxLines: widget.password ? 1 : widget.maxLines,
       onSubmitted: widget.onSubmitted,
+      cursorColor: const Color(0xFF0F4C81),
+      style: const TextStyle(color: Color(0xFF1D2A44)),
       decoration: InputDecoration(
         hintText: widget.hint,
         errorText: widget.errorText,
-        prefixIcon: Icon(widget.icon, color: AppColors.muted, size: 21),
+        filled: true,
+        fillColor: Colors.white,
+        hintStyle: const TextStyle(color: Color(0xFF8590A0), fontSize: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: border,
+        enabledBorder: border,
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
+          borderSide: BorderSide(color: Color(0xFF00A896), width: 1.6),
+        ),
+        prefixIcon: Icon(widget.icon, color: const Color(0xFF6F7B8F), size: 21),
         suffixIcon: widget.password
             ? IconButton(
                 icon: Icon(_sembunyi ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                    color: AppColors.muted),
+                    color: const Color(0xFF6F7B8F)),
                 onPressed: () => setState(() => _sembunyi = !_sembunyi),
               )
             : null,
@@ -282,7 +309,7 @@ class Pill extends StatelessWidget {
   final String label;
   final Color color;
   final IconData? icon;
-  const Pill(this.label, {super.key, this.color = AppColors.teal, this.icon});
+  const Pill(this.label, {super.key, this.color = const Color(0xFF00A896), this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -305,7 +332,7 @@ class Eyebrow extends StatelessWidget {
   final String text;
   final Color color;
   final IconData? icon;
-  const Eyebrow(this.text, {super.key, this.color = AppColors.coral, this.icon});
+  const Eyebrow(this.text, {super.key, this.color = const Color(0xFFF4A261), this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -327,13 +354,20 @@ class ErrorView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          const IconBox(Icons.cloud_off_outlined, size: 64, bg: AppColors.softCoral, fg: AppColors.coralDark),
+          const IconBox(Icons.cloud_off_outlined, size: 64, bg: Color(0xFFFFF1E6), fg: Color(0xFFC56D2F)),
           const SizedBox(height: 14),
-          Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.muted, height: 1.5)),
+          Text(message, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF6F7B8F), height: 1.5)),
           const SizedBox(height: 16),
           OutlinedButton(
             onPressed: onRetry,
-            style: OutlinedButton.styleFrom(minimumSize: const Size(160, 46)),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF0F4C81),
+              backgroundColor: Colors.white,
+              minimumSize: const Size(160, 46),
+              side: const BorderSide(color: Color(0xFFE6EBF0)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+            ),
             child: const Text('Coba lagi'),
           ),
         ]),
@@ -353,9 +387,9 @@ class EmptyView extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          IconBox(icon, size: 64, bg: AppColors.softTeal, fg: AppColors.teal),
+          IconBox(icon, size: 64, bg: const Color(0xFFE4F7F4), fg: const Color(0xFF00A896)),
           const SizedBox(height: 14),
-          Text(text, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.muted, height: 1.5)),
+          Text(text, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF6F7B8F), height: 1.5)),
         ]),
       ),
     );
@@ -375,7 +409,7 @@ class SectionTitle extends StatelessWidget {
     return Row(children: [
       Expanded(
         child: Text(text,
-            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.3, color: AppColors.ink)),
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, letterSpacing: -0.3, color: Color(0xFF1D2A44))),
       ),
       if (action != null)
         InkWell(
@@ -384,8 +418,8 @@ class SectionTitle extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Text(action!, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.teal)),
-              const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.teal),
+              Text(action!, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: Color(0xFF00A896))),
+              const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF00A896)),
             ]),
           ),
         ),
@@ -423,14 +457,14 @@ class SegmentToggle extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: i == index ? FontWeight.w700 : FontWeight.w500,
-                  color: i == index ? AppColors.indigo : AppColors.ink,
+                  color: i == index ? const Color(0xFF0F4C81) : const Color(0xFF1D2A44),
                 )),
           ),
         ),
     ];
     return Container(
       padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(color: AppColors.softGrey, borderRadius: BorderRadius.circular(11)),
+      decoration: BoxDecoration(color: const Color(0xFFEEF1F4), borderRadius: BorderRadius.circular(11)),
       child: Row(
         mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
         children: [for (final w in items) expand ? Expanded(child: w) : w],
@@ -463,10 +497,10 @@ class BimbelCover extends StatelessWidget {
   });
 
   static const _palet = [
-    [AppColors.indigo, AppColors.teal],
-    [AppColors.teal, AppColors.tealDark],
-    [AppColors.slate, AppColors.indigo],
-    [AppColors.coral, AppColors.coralDark],
+    [Color(0xFF0F4C81), Color(0xFF00A896)],
+    [Color(0xFF00A896), Color(0xFF0D7D76)],
+    [Color(0xFF1D2A44), Color(0xFF0F4C81)],
+    [Color(0xFFF4A261), Color(0xFFC56D2F)],
   ];
 
   static String asset(int id) => 'assets/bimbel/bimbel_$id.png';
@@ -545,12 +579,12 @@ class RatingText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisSize: MainAxisSize.min, children: [
-      Icon(Icons.star_rounded, size: size + 3, color: AppColors.star),
+      Icon(Icons.star_rounded, size: size + 3, color: const Color(0xFFD77A25)),
       const SizedBox(width: 2),
-      Text(rating, style: TextStyle(fontSize: size, fontWeight: FontWeight.w700, color: AppColors.star)),
+      Text(rating, style: TextStyle(fontSize: size, fontWeight: FontWeight.w700, color: const Color(0xFFD77A25))),
       if (jumlah != null) ...[
         const SizedBox(width: 3),
-        Text(jumlah!, style: TextStyle(fontSize: size - 1, color: AppColors.muted)),
+        Text(jumlah!, style: TextStyle(fontSize: size - 1, color: const Color(0xFF6F7B8F))),
       ],
     ]);
   }

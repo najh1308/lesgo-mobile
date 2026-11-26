@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../core/api_client.dart';
 import '../core/app_settings.dart';
 import '../core/format.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../services/bimbel_service.dart';
 import '../services/location_service.dart';
@@ -100,10 +99,21 @@ class _DetailScreenState extends State<DetailScreen> {
   Future<void> _tulisReview() async {
     int rating = 5;
     final komentar = TextEditingController();
+    const border = OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(14)),
+      borderSide: BorderSide(color: Color(0xFFE6EBF0)),
+    );
+    final dialogBtnStyle = TextButton.styleFrom(
+      foregroundColor: const Color(0xFF00A896),
+      textStyle: const TextStyle(fontWeight: FontWeight.w700),
+    );
     final kirim = await showDialog<bool>(
       context: context,
       builder: (c) => StatefulBuilder(
         builder: (c, setD) => AlertDialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Text('Tulis Review'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -118,7 +128,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         i <= rating
                             ? Icons.star_rounded
                             : Icons.star_border_rounded,
-                        color: AppColors.accent,
+                        color: const Color(0xFFF4A261),
                         size: 32,
                       ),
                     ),
@@ -127,8 +137,20 @@ class _DetailScreenState extends State<DetailScreen> {
               TextField(
                 controller: komentar,
                 maxLines: 3,
+                cursorColor: const Color(0xFF0F4C81),
+                style: const TextStyle(color: Color(0xFF1D2A44)),
                 decoration: const InputDecoration(
                   hintText: 'Ceritakan pengalamanmu',
+                  hintStyle: TextStyle(color: Color(0xFF8590A0), fontSize: 14),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  border: border,
+                  enabledBorder: border,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderSide: BorderSide(color: Color(0xFF00A896), width: 1.6),
+                  ),
                 ),
               ),
             ],
@@ -136,10 +158,12 @@ class _DetailScreenState extends State<DetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c, false),
+              style: dialogBtnStyle,
               child: const Text('Batal'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(c, true),
+              style: dialogBtnStyle,
               child: const Text('Kirim'),
             ),
           ],
@@ -165,9 +189,24 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     if (_loading || _error != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Detail bimbel')),
+        backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+        appBar: AppBar(
+          title: const Text('Detail bimbel'),
+          backgroundColor: Colors.white,
+          foregroundColor: const Color(0xFF1D2A44),
+          surfaceTintColor: Colors.transparent,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: false,
+          titleTextStyle: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1D2A44),
+          ),
+          shape: const Border(bottom: BorderSide(color: Color(0xFFE6EBF0))),
+        ),
         body: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFF00A896)))
             : ErrorView(message: _error!, onRetry: _muat),
       );
     }
@@ -175,6 +214,7 @@ class _DetailScreenState extends State<DetailScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
         body: ListenableBuilder(
           listenable: AppSettings.i,
           builder: (c, _) => _isi(d),
@@ -219,7 +259,7 @@ class _DetailScreenState extends State<DetailScreen> {
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: AppColors.line)),
+        border: Border(top: BorderSide(color: Color(0xFFE6EBF0))),
       ),
       child: SafeArea(
         top: false,
@@ -234,7 +274,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   children: [
                     const Text(
                       'Mulai dari',
-                      style: TextStyle(fontSize: 11.5, color: AppColors.muted),
+                      style: TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F)),
                     ),
                     Text.rich(
                       TextSpan(
@@ -244,14 +284,14 @@ class _DetailScreenState extends State<DetailScreen> {
                             style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w800,
-                              color: AppColors.indigo,
+                              color: Color(0xFF0F4C81),
                             ),
                           ),
                           const TextSpan(
                             text: ' /bulan',
                             style: TextStyle(
                               fontSize: 11.5,
-                              color: AppColors.muted,
+                              color: Color(0xFF6F7B8F),
                             ),
                           ),
                         ],
@@ -308,7 +348,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   () => Navigator.maybePop(context),
                 ),
               ),
-              Positioned(
+                Positioned(
                 right: 16,
                 top: top + 10,
                 child: _TombolBulat(
@@ -316,7 +356,7 @@ class _DetailScreenState extends State<DetailScreen> {
                       ? Icons.favorite_rounded
                       : Icons.favorite_border_rounded,
                   _favorit,
-                  warna: d.isFavorit ? AppColors.danger : AppColors.ink,
+                  warna: d.isFavorit ? const Color(0xFFE5484D) : const Color(0xFF1D2A44),
                 ),
               ),
             ],
@@ -326,7 +366,7 @@ class _DetailScreenState extends State<DetailScreen> {
           offset: const Offset(0, -22),
           child: Container(
             decoration: const BoxDecoration(
-              color: AppColors.bg,
+              color: Color(0xFFF8F9FA),
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
             padding: const EdgeInsets.fromLTRB(18, 20, 18, 8),
@@ -348,7 +388,7 @@ class _DetailScreenState extends State<DetailScreen> {
                               fontSize: 23,
                               fontWeight: FontWeight.w800,
                               letterSpacing: -0.6,
-                              color: AppColors.ink,
+                              color: Color(0xFF1D2A44),
                             ),
                           ),
                           const SizedBox(height: 5),
@@ -360,7 +400,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                 child: Icon(
                                   Icons.location_on_outlined,
                                   size: 16,
-                                  color: AppColors.muted,
+                                  color: Color(0xFF6F7B8F),
                                 ),
                               ),
                               const SizedBox(width: 3),
@@ -369,7 +409,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                   d.alamat,
                                   style: const TextStyle(
                                     fontSize: 12.5,
-                                    color: AppColors.muted,
+                                    color: Color(0xFF6F7B8F),
                                   ),
                                 ),
                               ),
@@ -385,7 +425,7 @@ class _DetailScreenState extends State<DetailScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.softCoral,
+                        color: const Color(0xFFFFF1E6),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
@@ -396,7 +436,7 @@ class _DetailScreenState extends State<DetailScreen> {
                             '${d.jumlahReview} ulasan',
                             style: const TextStyle(
                               fontSize: 10.5,
-                              color: AppColors.muted,
+                              color: Color(0xFF6F7B8F),
                             ),
                           ),
                         ],
@@ -433,7 +473,7 @@ class _DetailScreenState extends State<DetailScreen> {
                   Text(
                     d.deskripsi,
                     style: const TextStyle(
-                      color: AppColors.muted,
+                      color: Color(0xFF6F7B8F),
                       height: 1.55,
                       fontSize: 13.5,
                     ),
@@ -502,7 +542,7 @@ class _DetailScreenState extends State<DetailScreen> {
                     padding: EdgeInsets.only(bottom: 8),
                     child: Text(
                       'Belum ada ulasan.',
-                      style: TextStyle(color: AppColors.muted),
+                      style: TextStyle(color: Color(0xFF6F7B8F)),
                     ),
                   ),
                 for (final r in _review.take(5))
@@ -514,12 +554,12 @@ class _DetailScreenState extends State<DetailScreen> {
                         children: [
                           CircleAvatar(
                             radius: 17,
-                            backgroundColor: AppColors.softBlue,
+                            backgroundColor: const Color(0xFFEAF2F8),
                             child: Text(
                               r.nama.isEmpty ? '?' : r.nama[0].toUpperCase(),
                               style: const TextStyle(
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.indigo,
+                                color: Color(0xFF0F4C81),
                               ),
                             ),
                           ),
@@ -535,6 +575,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                         r.nama,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w700,
+                                          color: Color(0xFF1D2A44),
                                         ),
                                       ),
                                     ),
@@ -546,7 +587,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                   Text(
                                     r.komentar,
                                     style: const TextStyle(
-                                      color: AppColors.muted,
+                                      color: Color(0xFF6F7B8F),
                                       fontSize: 13,
                                       height: 1.45,
                                     ),
@@ -572,7 +613,7 @@ class _TombolBulat extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final Color warna;
-  const _TombolBulat(this.icon, this.onTap, {this.warna = AppColors.ink});
+  const _TombolBulat(this.icon, this.onTap, {this.warna = const Color(0xFF1D2A44)});
 
   @override
   Widget build(BuildContext context) {
@@ -607,17 +648,21 @@ class _InfoCepat extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.line),
+          border: Border.all(color: const Color(0xFFE6EBF0)),
         ),
         child: Column(
           children: [
-            Icon(icon, size: 21, color: AppColors.teal),
+            Icon(icon, size: 21, color: const Color(0xFF00A896)),
             const SizedBox(height: 5),
             Text(
               judul,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF1D2A44),
+              ),
             ),
             const SizedBox(height: 1),
             Text(
@@ -625,7 +670,7 @@ class _InfoCepat extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 10.5, color: AppColors.muted),
+              style: const TextStyle(fontSize: 10.5, color: Color(0xFF6F7B8F)),
             ),
           ],
         ),
@@ -653,11 +698,11 @@ class _ProgramCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
-        color: unggulan ? AppColors.softTeal : Colors.white,
+        color: unggulan ? const Color(0xFFE4F7F4) : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
           side: BorderSide(
-            color: unggulan ? const Color(0xFFA8DCD5) : AppColors.line,
+            color: unggulan ? const Color(0xFFA8DCD5) : const Color(0xFFE6EBF0),
           ),
         ),
         clipBehavior: Clip.antiAlias,
@@ -680,15 +725,15 @@ class _ProgramCard extends StatelessWidget {
                       child: Eyebrow(
                         '${p.jenjang} · ${p.mode == 'online' ? 'ONLINE' : 'OFFLINE'} · ${p.durasiMinggu} MINGGU'
                             .toUpperCase(),
-                        color: AppColors.teal,
+                        color: const Color(0xFF00A896),
                       ),
                     ),
                     if (bisa)
                       Pill(
                         sisa > 0 ? 'Sisa $sisa kursi' : 'Penuh',
                         color: sisa > 0
-                            ? AppColors.coralDark
-                            : AppColors.danger,
+                            ? const Color(0xFFC56D2F)
+                            : const Color(0xFFE5484D),
                       ),
                   ],
                 ),
@@ -698,6 +743,7 @@ class _ProgramCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
+                    color: Color(0xFF1D2A44),
                   ),
                 ),
                 if (p.mapel.isNotEmpty) ...[
@@ -706,7 +752,7 @@ class _ProgramCard extends StatelessWidget {
                     p.mapel,
                     style: const TextStyle(
                       fontSize: 12.5,
-                      color: AppColors.muted,
+                      color: Color(0xFF6F7B8F),
                     ),
                   ),
                 ],
@@ -719,7 +765,7 @@ class _ProgramCard extends StatelessWidget {
                         const Icon(
                           Icons.schedule_rounded,
                           size: 14,
-                          color: AppColors.muted,
+                          color: Color(0xFF6F7B8F),
                         ),
                         const SizedBox(width: 4),
                         Expanded(
@@ -727,7 +773,7 @@ class _ProgramCard extends StatelessWidget {
                             'Setiap ${j.hari}, ${TimeUtil.rentang(j.tanggalMulai, j.jamMulai, j.jamSelesai, zona)}',
                             style: const TextStyle(
                               fontSize: 12,
-                              color: AppColors.muted,
+                              color: Color(0xFF6F7B8F),
                             ),
                           ),
                         ),
@@ -742,12 +788,12 @@ class _ProgramCard extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.indigo,
+                        color: Color(0xFF0F4C81),
                       ),
                     ),
                     const Text(
                       ' / bulan',
-                      style: TextStyle(fontSize: 11.5, color: AppColors.muted),
+                      style: TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F)),
                     ),
                     const Spacer(),
                     Text(
@@ -755,14 +801,14 @@ class _ProgramCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w800,
-                        color: bisa ? AppColors.teal : AppColors.muted,
+                        color: bisa ? const Color(0xFF00A896) : const Color(0xFF6F7B8F),
                       ),
                     ),
                     if (bisa)
                       const Icon(
                         Icons.chevron_right_rounded,
                         size: 18,
-                        color: AppColors.teal,
+                        color: Color(0xFF00A896),
                       ),
                   ],
                 ),
@@ -808,8 +854,8 @@ class _Kontak extends StatelessWidget {
           const IconBox(
             Icons.phone_outlined,
             size: 36,
-            bg: AppColors.softTeal,
-            fg: AppColors.teal,
+            bg: Color(0xFFE4F7F4),
+            fg: Color(0xFF00A896),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -818,13 +864,14 @@ class _Kontak extends StatelessWidget {
               children: [
                 const Text(
                   'Kontak bimbel',
-                  style: TextStyle(fontSize: 11.5, color: AppColors.muted),
+                  style: TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F)),
                 ),
                 Text(
                   nomor,
                   style: const TextStyle(
                     fontSize: 14.5,
                     fontWeight: FontWeight.w800,
+                    color: Color(0xFF1D2A44),
                   ),
                 ),
               ],
@@ -833,13 +880,13 @@ class _Kontak extends StatelessWidget {
           IconButton(
             tooltip: 'Telepon',
             onPressed: () => _buka(context, Uri(scheme: 'tel', path: _angka)),
-            icon: const Icon(Icons.call_rounded, color: AppColors.indigo),
+            icon: const Icon(Icons.call_rounded, color: Color(0xFF0F4C81)),
           ),
           if (_bisaWa)
             IconButton(
               tooltip: 'WhatsApp',
               onPressed: () => _buka(context, Uri.parse('https://wa.me/$_wa')),
-              icon: const Icon(Icons.chat_rounded, color: AppColors.teal),
+              icon: const Icon(Icons.chat_rounded, color: Color(0xFF00A896)),
             ),
         ],
       ),

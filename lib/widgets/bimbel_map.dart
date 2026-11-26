@@ -3,7 +3,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../core/config.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 
 /// Peta OpenStreetMap (gratis, tanpa API key) dengan marker bimbel dan posisi pengguna.
@@ -50,7 +49,7 @@ class BimbelMap extends StatelessWidget {
                 height: 26,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: const Color(0xFF0F4C81),
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 3),
                   ),
@@ -66,7 +65,7 @@ class BimbelMap extends StatelessWidget {
                   onTap: onSelect == null ? null : () => onSelect!(b),
                   child: Icon(Icons.location_on,
                       size: b.id == selectedId ? 46 : 38,
-                      color: b.id == selectedId ? AppColors.accent : AppColors.danger),
+                      color: b.id == selectedId ? const Color(0xFFF4A261) : const Color(0xFFE5484D)),
                 ),
               ),
           ]),

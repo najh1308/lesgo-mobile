@@ -5,11 +5,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../core/config.dart';
-import '../core/theme.dart';
 import '../services/location_service.dart';
 import 'common.dart';
 
-/// Kota populer sebagai pintasan cepat.
 const _kotaPopuler = <(String, double, double)>[
   ('Jakarta', -6.2088, 106.8456),
   ('Bandung', -6.9175, 107.6191),
@@ -23,13 +21,13 @@ const _kotaPopuler = <(String, double, double)>[
   ('Palembang', -2.9761, 104.7754),
 ];
 
-/// Membuka pilihan lokasi: GPS, cari nama tempat, pilih di peta, atau kota populer.
-/// Hasilnya langsung disimpan di [LocationService] sehingga Beranda & Cari memuat ulang sendiri.
+
 Future<void> tampilPilihLokasi(BuildContext context) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.white,
+    showDragHandle: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
     ),
@@ -69,7 +67,7 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
       });
       return;
     }
-    // Nominatim membatasi ±1 permintaan per detik, jadi pencarian ditunda.
+  
     _debounce = Timer(const Duration(milliseconds: 700), _cari);
   }
 
@@ -147,7 +145,7 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: AppColors.line,
+                    color: const Color(0xFFE6EBF0),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -155,14 +153,18 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
               const SizedBox(height: 14),
               const Text(
                 'Pilih lokasi',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1D2A44),
+                ),
               ),
               const SizedBox(height: 2),
               Text(
                 pilihan == null
                     ? 'Saat ini mengikuti lokasi GPS-mu. Pilih lokasi lain untuk mencari bimbel di sana.'
                     : 'Saat ini memakai: ${pilihan.label}',
-                style: const TextStyle(fontSize: 12.5, color: AppColors.muted),
+                style: const TextStyle(fontSize: 12.5, color: Color(0xFF6F7B8F)),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -170,8 +172,26 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                 onChanged: _tunda,
                 textInputAction: TextInputAction.search,
                 onSubmitted: (_) => _cari(),
+                cursorColor: const Color(0xFF0F4C81),
+                style: const TextStyle(color: Color(0xFF1D2A44)),
                 decoration: InputDecoration(
                   hintText: 'Cari kota, kecamatan, sekolah, atau alamat...',
+                  hintStyle: const TextStyle(color: Color(0xFF8590A0), fontSize: 14),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderSide: BorderSide(color: Color(0xFFE6EBF0)),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderSide: BorderSide(color: Color(0xFFE6EBF0)),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderSide: BorderSide(color: Color(0xFF00A896), width: 1.6),
+                  ),
                   prefixIcon: const Icon(Icons.search_rounded),
                   suffixIcon: _mencari
                       ? const Padding(
@@ -179,7 +199,10 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                           child: SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Color(0xFF00A896),
+                            ),
                           ),
                         )
                       : (_q.text.isEmpty
@@ -200,7 +223,7 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                     _error!,
                     style: const TextStyle(
                       fontSize: 12.5,
-                      color: AppColors.muted,
+                      color: Color(0xFF6F7B8F),
                     ),
                   ),
                 ),
@@ -209,12 +232,13 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(
                     Icons.place_outlined,
-                    color: AppColors.indigo,
+                    color: Color(0xFF0F4C81),
                   ),
                   title: Text(
                     t.nama,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Color(0xFF1D2A44)),
                   ),
                   subtitle: t.detail.isEmpty
                       ? null
@@ -222,6 +246,7 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                           t.detail,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: Color(0xFF6F7B8F)),
                         ),
                   onTap: () => _pakai(
                     t.lat,
@@ -239,16 +264,25 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                       ? const SizedBox(
                           width: 24,
                           height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2.4),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.4,
+                            color: Color(0xFF00A896),
+                          ),
                         )
                       : const Icon(
                           Icons.my_location_rounded,
-                          color: AppColors.teal,
+                          color: Color(0xFF00A896),
                         ),
-                  title: const Text('Gunakan lokasi saya sekarang'),
-                  subtitle: const Text('Ikuti GPS perangkat'),
+                  title: const Text(
+                    'Gunakan lokasi saya sekarang',
+                    style: TextStyle(color: Color(0xFF1D2A44)),
+                  ),
+                  subtitle: const Text(
+                    'Ikuti GPS perangkat',
+                    style: TextStyle(color: Color(0xFF6F7B8F)),
+                  ),
                   trailing: pilihan == null
-                      ? const Icon(Icons.check_circle, color: AppColors.teal)
+                      ? const Icon(Icons.check_circle, color: Color(0xFF00A896))
                       : null,
                   onTap: _gpsLoading ? null : _gps,
                 ),
@@ -256,16 +290,26 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(
                     Icons.map_outlined,
-                    color: AppColors.indigo,
+                    color: Color(0xFF0F4C81),
                   ),
-                  title: const Text('Pilih di peta'),
-                  subtitle: const Text('Ketuk titik mana pun di peta'),
+                  title: const Text(
+                    'Pilih di peta',
+                    style: TextStyle(color: Color(0xFF1D2A44)),
+                  ),
+                  subtitle: const Text(
+                    'Ketuk titik mana pun di peta',
+                    style: TextStyle(color: Color(0xFF6F7B8F)),
+                  ),
                   onTap: _dariPeta,
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'Kota populer',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1D2A44),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
@@ -275,6 +319,15 @@ class _PilihLokasiSheetState extends State<_PilihLokasiSheet> {
                     for (final k in _kotaPopuler)
                       ActionChip(
                         label: Text(k.$1),
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFFE6EBF0)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        labelStyle: const TextStyle(
+                          fontSize: 12.5,
+                          color: Color(0xFF1D2A44),
+                        ),
                         onPressed: () => _pakai(k.$2, k.$3, k.$1),
                       ),
                   ],
@@ -326,7 +379,22 @@ class _PilihDiPetaState extends State<_PilihDiPeta> {
   Widget build(BuildContext context) {
     final titik = _titik;
     return Scaffold(
-      appBar: AppBar(title: const Text('Pilih di peta')),
+      backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+      appBar: AppBar(
+        title: const Text('Pilih di peta'),
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF1D2A44),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        centerTitle: false,
+        titleTextStyle: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF1D2A44),
+        ),
+        shape: const Border(bottom: BorderSide(color: Color(0xFFE6EBF0))),
+      ),
       body: Stack(
         children: [
           FlutterMap(
@@ -351,7 +419,7 @@ class _PilihDiPetaState extends State<_PilihDiPeta> {
                       child: const Icon(
                         Icons.location_on,
                         size: 46,
-                        color: AppColors.danger,
+                        color: Color(0xFFE5484D),
                       ),
                     ),
                   ],
@@ -397,6 +465,7 @@ class _PilihDiPetaState extends State<_PilihDiPeta> {
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
+                        color: Color(0xFF1D2A44),
                       ),
                     ),
                     const SizedBox(height: 10),

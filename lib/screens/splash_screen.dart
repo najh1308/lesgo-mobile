@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 
 import '../core/api_client.dart';
 import '../core/session.dart';
-import '../core/theme.dart';
 import '../services/auth_service.dart';
 import '../services/biometric_service.dart';
 import '../services/kurs_service.dart';
@@ -65,12 +64,15 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     if (_error != null) {
-      return Scaffold(body: ErrorView(message: _error!, onRetry: _mulai));
+      return Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+        body: ErrorView(message: _error!, onRetry: _mulai),
+      );
     }
     return const AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: AppColors.indigo,
+        backgroundColor: Color(0xFF0F4C81), // ubah warna latar halaman ini di sini
         body: Center(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             BrandMark(light: true, size: 84),
@@ -83,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
             SizedBox(
               width: 26,
               height: 26,
-              child: CircularProgressIndicator(strokeWidth: 2.6, color: AppColors.teal),
+              child: CircularProgressIndicator(strokeWidth: 2.6, color: Color(0xFF00A896)),
             ),
           ]),
         ),

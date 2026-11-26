@@ -8,7 +8,6 @@ import 'package:sensors_plus/sensors_plus.dart';
 import '../core/api_client.dart';
 import '../core/app_settings.dart';
 import '../core/session.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../services/bimbel_service.dart';
 import '../services/location_service.dart';
@@ -207,81 +206,86 @@ class _HomeScreenState extends State<HomeScreen> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle
           .light, // ikon status bar putih di atas header biru
-      child: RefreshIndicator(
-        onRefresh: _muat,
-        edgeOffset: MediaQuery.paddingOf(context).top,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            _hero(context),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _promo(),
-                  const SizedBox(height: 26),
-                  if (Personalisasi.i.aktif) ...[
-                    _kartuProfil(),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA), // ubah warna latar halaman ini di sini
+        body: RefreshIndicator(
+          color: const Color(0xFF0F4C81),
+          backgroundColor: Colors.white,
+          onRefresh: _muat,
+          edgeOffset: MediaQuery.paddingOf(context).top,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              _hero(context),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 18, 18, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _promo(),
                     const SizedBox(height: 26),
-                    if (_untukmu.isNotEmpty) ...[
-                      SectionTitle(
-                        'Rekomendasi untukmu',
-                        action: 'Lihat semua',
-                        onAction: () =>
-                            _kePencarian(jenjang: Personalisasi.i.jenjang),
-                      ),
-                      const SizedBox(height: 13),
-                      _daftarUntukmu(),
+                    if (Personalisasi.i.aktif) ...[
+                      _kartuProfil(),
                       const SizedBox(height: 26),
+                      if (_untukmu.isNotEmpty) ...[
+                        SectionTitle(
+                          'Rekomendasi untukmu',
+                          action: 'Lihat semua',
+                          onAction: () =>
+                              _kePencarian(jenjang: Personalisasi.i.jenjang),
+                        ),
+                        const SizedBox(height: 13),
+                        _daftarUntukmu(),
+                        const SizedBox(height: 26),
+                      ],
                     ],
-                  ],
 
-                  const SectionTitle('Pilih jenjangmu'),
-                  const SizedBox(height: 13),
-                  _jenjang(),
-                  const SizedBox(height: 26),
-                  _kartuGoyang(),
-                  const SizedBox(height: 26),
-                  SectionTitle(
-                    'Bimbel terdekat',
-                    action: 'Lihat semua',
-                    onAction: () => _kePencarian(),
-                  ),
-                  const SizedBox(height: 13),
-                  _daftarTerdekat(),
-                  const SizedBox(height: 26),
-                  const SectionTitle('Belajar sesuai caramu'),
-                  const SizedBox(height: 13),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _Pintasan(
-                          icon: Icons.smart_toy_outlined,
-                          bg: AppColors.softBlue,
-                          fg: AppColors.indigo,
-                          judul: 'Chatbot Geo',
-                          sub: 'Tanya materi apa saja',
-                          onTap: () => Navigator.pushNamed(context, '/tutor'),
+                    const SectionTitle('Pilih jenjangmu'),
+                    const SizedBox(height: 13),
+                    _jenjang(),
+                    const SizedBox(height: 26),
+                    _kartuGoyang(),
+                    const SizedBox(height: 26),
+                    SectionTitle(
+                      'Bimbel terdekat',
+                      action: 'Lihat semua',
+                      onAction: () => _kePencarian(),
+                    ),
+                    const SizedBox(height: 13),
+                    _daftarTerdekat(),
+                    const SizedBox(height: 26),
+                    const SectionTitle('Belajar sesuai caramu'),
+                    const SizedBox(height: 13),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _Pintasan(
+                            icon: Icons.smart_toy_outlined,
+                            bg: const Color(0xFFEAF2F8),
+                            fg: const Color(0xFF0F4C81),
+                            judul: 'Chatbot Geo',
+                            sub: 'Tanya materi apa saja',
+                            onTap: () => Navigator.pushNamed(context, '/tutor'),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _Pintasan(
-                          icon: Icons.sports_esports_outlined,
-                          bg: AppColors.softCoral,
-                          fg: const Color(0xFFCF6F29),
-                          judul: 'Hitung Cepat',
-                          sub: 'Main & latih fokusmu',
-                          onTap: () => Navigator.pushNamed(context, '/game'),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _Pintasan(
+                            icon: Icons.sports_esports_outlined,
+                            bg: const Color(0xFFFFF1E6),
+                            fg: const Color(0xFFCF6F29),
+                            judul: 'Hitung Cepat',
+                            sub: 'Main & latih fokusmu',
+                            onTap: () => Navigator.pushNamed(context, '/game'),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -298,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
         20,
       ),
       decoration: const BoxDecoration(
-        color: AppColors.indigo,
+        color: Color(0xFF0F4C81),
         borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
       child: Column(
@@ -384,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 48,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.coral,
+                    color: const Color(0xFFF4A261),
                     border: Border.all(
                       color: Colors.white.withAlpha(72),
                       width: 3,
@@ -401,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: const TextStyle(
                             fontWeight: FontWeight.w800,
                             fontSize: 18,
-                            color: AppColors.slate,
+                            color: Color(0xFF1D2A44),
                           ),
                         ),
                 ),
@@ -419,9 +423,11 @@ class _HomeScreenState extends State<HomeScreen> {
               controller: _cari,
               textInputAction: TextInputAction.search,
               onSubmitted: (v) => _kePencarian(q: v.trim()),
-              style: const TextStyle(fontSize: 14),
+              cursorColor: const Color(0xFF0F4C81),
+              style: const TextStyle(fontSize: 14, color: Color(0xFF1D2A44)),
               decoration: InputDecoration(
                 hintText: 'Cari bimbel, mapel, atau lokasi...',
+                hintStyle: const TextStyle(color: Color(0xFF8590A0), fontSize: 14),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
@@ -435,7 +441,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 suffixIcon: IconButton(
                   icon: const Icon(
                     Icons.arrow_forward_rounded,
-                    color: AppColors.teal,
+                    color: Color(0xFF00A896),
                   ),
                   onPressed: () => _kePencarian(q: _cari.text.trim()),
                 ),
@@ -452,7 +458,7 @@ class _HomeScreenState extends State<HomeScreen> {
       height: 148,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: AppColors.slate,
+        color: const Color(0xFF1D2A44),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Stack(
@@ -469,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [AppColors.teal, AppColors.tealDark],
+                    colors: [Color(0xFF00A896), Color(0xFF0D7D76)],
                   ),
                   borderRadius: BorderRadius.vertical(top: Radius.circular(60)),
                 ),
@@ -483,7 +489,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
-                          color: AppColors.coral,
+                          color: Color(0xFFF4A261),
                         ),
                       ),
                     ),
@@ -492,7 +498,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       right: 12,
                       child: Text(
                         '✦',
-                        style: TextStyle(fontSize: 16, color: AppColors.coral),
+                        style: TextStyle(fontSize: 16, color: Color(0xFFF4A261)),
                       ),
                     ),
                     Center(
@@ -540,13 +546,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.teal,
+                          color: Color(0xFF00A896),
                         ),
                       ),
                       Icon(
                         Icons.chevron_right_rounded,
                         size: 18,
-                        color: AppColors.teal,
+                        color: Color(0xFF00A896),
                       ),
                     ],
                   ),
@@ -572,14 +578,14 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Material(
               color: Personalisasi.i.jenjangSet.contains(data[i].$1)
-                  ? AppColors.softTeal
+                  ? const Color(0xFFE4F7F4)
                   : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
                 side: BorderSide(
                   color: Personalisasi.i.jenjangSet.contains(data[i].$1)
-                      ? AppColors.teal
-                      : AppColors.line,
+                      ? const Color(0xFF00A896)
+                      : const Color(0xFFE6EBF0),
                 ),
               ),
               child: InkWell(
@@ -597,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: const TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 15,
-                          color: AppColors.indigo,
+                          color: Color(0xFF0F4C81),
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -607,7 +613,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 10.5,
-                          color: AppColors.muted,
+                          color: Color(0xFF6F7B8F),
                         ),
                       ),
                     ],
@@ -628,8 +634,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           const IconBox(
             Icons.tune_rounded,
-            bg: AppColors.softTeal,
-            fg: AppColors.teal,
+            bg: Color(0xFFE4F7F4),
+            fg: Color(0xFF00A896),
             size: 40,
           ),
           const SizedBox(width: 12),
@@ -642,7 +648,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.ink,
+                    color: Color(0xFF1D2A44),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -652,7 +658,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 12,
-                    color: AppColors.muted,
+                    color: Color(0xFF6F7B8F),
                     height: 1.35,
                   ),
                 ),
@@ -664,7 +670,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
-              color: AppColors.teal,
+              color: Color(0xFF00A896),
             ),
           ),
         ],
@@ -701,7 +707,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _kartuGoyang() {
     return Material(
-      color: AppColors.softTeal,
+      color: const Color(0xFFE4F7F4),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: const BorderSide(color: Color(0xFFA8DCD5)),
@@ -715,7 +721,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const IconBox(
                 Icons.vibration_rounded,
-                bg: AppColors.teal,
+                bg: Color(0xFF00A896),
                 fg: Colors.white,
                 size: 40,
               ),
@@ -729,13 +735,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.ink,
+                        color: Color(0xFF1D2A44),
                       ),
                     ),
                     SizedBox(height: 2),
                     Text(
                       'Goyangkan HP (atau ketuk) untuk rekomendasi kejutan',
-                      style: TextStyle(fontSize: 11.5, color: AppColors.muted),
+                      style: TextStyle(fontSize: 11.5, color: Color(0xFF6F7B8F)),
                     ),
                   ],
                 ),
@@ -751,7 +757,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.teal,
+                    color: Color(0xFF00A896),
                   ),
                 ),
               ),
@@ -766,7 +772,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_loading) {
       return const Padding(
         padding: EdgeInsets.all(32),
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: CircularProgressIndicator(color: Color(0xFF00A896))),
       );
     }
     if (_error != null)
@@ -828,7 +834,7 @@ class _Pintasan extends StatelessWidget {
       color: Colors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.line),
+        side: const BorderSide(color: Color(0xFFE6EBF0)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -848,7 +854,7 @@ class _Pintasan extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.ink,
+                        color: Color(0xFF1D2A44),
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -858,7 +864,7 @@ class _Pintasan extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 10.5,
-                        color: AppColors.muted,
+                        color: Color(0xFF6F7B8F),
                       ),
                     ),
                   ],
@@ -867,7 +873,7 @@ class _Pintasan extends StatelessWidget {
               const Icon(
                 Icons.chevron_right_rounded,
                 size: 18,
-                color: AppColors.muted,
+                color: Color(0xFF6F7B8F),
               ),
             ],
           ),
