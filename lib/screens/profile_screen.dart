@@ -93,16 +93,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  /// Simpan pilihan pengingat lalu jadwalkan ulang semua notifikasi sesi.
-  Future<void> _gantiPengingat(int jam) async {
-    AppSettings.i.setPengingatJam(jam);
-    await PendaftaranService.sinkronkanPengingat();
-    if (!mounted) return;
-    showMsg(context, jam == 0
-        ? 'Pengingat jadwal dimatikan'
-        : 'Pengingat diatur ${AppSettings.labelPengingat(jam)} sebelum sesi');
-  }
-
   Future<void> _fotoBaru() async {
     // Diperkecil agar muat disimpan di database (sekitar 20-60 KB).
     final f = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 70, maxWidth: 400, maxHeight: 400);
@@ -352,10 +342,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         onTap: () => _pilihSheet('Mata uang', _namaUang, s.mataUang, (v) => _ganti(uang: v))),
                     _Menu(Icons.public_rounded, 'Zona waktu', TimeUtil.zonaPilihan[s.zona] ?? s.zona,
                         onTap: () => _pilihSheet('Zona waktu', TimeUtil.zonaPilihan, s.zona, (v) => _ganti(zona: v))),
-                    _Menu(Icons.notifications_active_outlined, 'Pengingat jadwal',
-                        AppSettings.pengingatPilihan['${s.pengingatJam}'] ?? '${s.pengingatJam} jam sebelum sesi',
-                        onTap: () => _pilihSheet('Ingatkan sebelum sesi', AppSettings.pengingatPilihan,
-                            '${s.pengingatJam}', (v) => _gantiPengingat(int.parse(v)))),
                     _Menu(Icons.rate_review_outlined, 'Saran & kesan', 'Mata kuliah Pemrograman Aplikasi Mobile',
                         onTap: () => Navigator.pushNamed(context, '/saran')),
                   ]),
