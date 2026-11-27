@@ -267,6 +267,26 @@ class Pendaftaran {
     jamSelesai: jamSelesai,
     tanggalMulai: iso,
   );
+  /// Tanggal sesi terakhir = tanggal mulai + 7 hari x (durasi - 1). Null jika tanggal tidak valid.
+  DateTime? get tanggalSesiTerakhir {
+    final t = DateTime.tryParse(tanggalMulai);
+    if (t == null) return null;
+    final sesi = durasiMinggu < 1 ? 1 : durasiMinggu;
+    return DateTime(t.year, t.month, t.day + 7 * (sesi - 1));
+  }
+
+  /// Tombol Perpanjang tampil jika pendaftaran sudah selesai, atau masih aktif
+  /// tetapi sesi terakhirnya tinggal 7 hari lagi (atau sudah lewat).
+  bool get bisaDiperpanjang {
+    if (status == 'selesai') return true;
+    if (status != 'aktif') return false;
+    final akhir = tanggalSesiTerakhir;
+    if (akhir == null) return false;
+    final n = DateTime.now();
+    final hariIni = DateTime(n.year, n.month, n.day);
+    return akhir.difference(hariIni).inDays <= 7;
+  }
+
   factory Pendaftaran.fromJson(Map<String, dynamic> j) {
     final p = Map<String, dynamic>.from(j['program']);
     final b = Map<String, dynamic>.from(j['bimbel']);

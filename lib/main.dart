@@ -63,7 +63,7 @@ class GeoLearnApp extends StatelessWidget {
         break;
       case '/daftar':
         final a = s.arguments as DaftarArgs;
-        page = DaftarScreen(detail: a.detail, program: a.program);
+        page = DaftarScreen(detail: a.detail, program: a.program, perpanjangDari: a.perpanjangDari);
         break;
       case '/sukses':
         page = SuksesScreen(pendaftaran: s.arguments as Pendaftaran);

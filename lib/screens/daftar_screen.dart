@@ -12,14 +12,19 @@ import 'main_shell.dart';
 class DaftarArgs {
   final BimbelDetail detail;
   final Program program;
-  const DaftarArgs(this.detail, this.program);
+
+  /// Diisi saat PERPANJANGAN: pendaftaran lama yang dilanjutkan
+  /// (jadwal dan tanggal mulai akan terisi otomatis).
+  final Pendaftaran? perpanjangDari;
+  const DaftarArgs(this.detail, this.program, {this.perpanjangDari});
 }
 
 /// Pilih jadwal, lihat harga dan jam dalam mata uang/zona waktu pilihan, lalu konfirmasi.
 class DaftarScreen extends StatefulWidget {
   final BimbelDetail detail;
   final Program program;
-  const DaftarScreen({super.key, required this.detail, required this.program});
+  final Pendaftaran? perpanjangDari; // null = pendaftaran biasa
+  const DaftarScreen({super.key, required this.detail, required this.program, this.perpanjangDari});
 
   @override
   State<DaftarScreen> createState() => _DaftarScreenState();
@@ -30,6 +35,41 @@ class _DaftarScreenState extends State<DaftarScreen> {
   DateTime? _mulai; // tanggal mulai kelas yang dipilih pengguna
   String _metode = 'transfer';
   bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final lama = widget.perpanjangDari;
+    if (lama != null) _isiDariPendaftaranLama(lama);
+  }
+
+  static String _hhmm(String s) => s.length >= 5 ? s.substring(0, 5) : s;
+
+  /// Perpanjangan: pilih jadwal yang sama dengan pendaftaran lama dan mulai
+  /// seminggu setelah sesi terakhirnya (atau pertemuan terdekat bila sudah lewat).
+  void _isiDariPendaftaranLama(Pendaftaran lama) {
+    Jadwal? j;
+    for (final x in widget.program.jadwal) {
+      if (x.hari.toLowerCase() == lama.hari.toLowerCase() && _hhmm(x.jamMulai) == _hhmm(lama.jamMulai)) {
+        j = x;
+        break;
+      }
+    }
+    if (j == null) {
+      // Jadwal lama sudah tidak ada: pengguna memilih jadwal baru sendiri.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) showMsg(context, 'Jadwal sebelumnya sudah tidak tersedia, silakan pilih jadwal baru');
+      });
+      return;
+    }
+    final akhir = lama.tanggalSesiTerakhir;
+    DateTime? mulai = akhir == null ? null : DateTime(akhir.year, akhir.month, akhir.day + 7);
+    if (mulai == null || mulai.isBefore(_besok()) || !_cocokHari(j, mulai)) {
+      mulai = _tanggalTerdekat(j);
+    }
+    _jadwal = j;
+    _mulai = mulai;
+  }
 
   /// Nomor hari (Senin=1 ... Minggu=7) dari nama hari jadwal; null jika tidak dikenali.
   static int? _nomorHari(String hari) {
@@ -261,6 +301,7 @@ class _DaftarScreenState extends State<DaftarScreen> {
                     _Baris('Jenjang & mapel', '${p.jenjang} · ${p.mapel}'),
                     _Baris('Mode', p.mode == 'online' ? 'Online' : 'Offline'),
                     _Baris('Durasi', '${p.durasiMinggu} minggu'),
+                    if (widget.perpanjangDari != null) _Baris('Jenis', 'Perpanjangan program'),
                     if (_jadwal != null && _mulai != null)
                       _Baris(
                         'Mulai kelas',

@@ -8,6 +8,7 @@ import '../services/bimbel_service.dart';
 import '../services/pendaftaran_service.dart';
 import '../widgets/bimbel_card.dart';
 import '../widgets/common.dart';
+import 'daftar_screen.dart';
 import 'main_shell.dart';
 
 class AktivitasScreen extends StatelessWidget {
@@ -253,6 +254,37 @@ class _PendaftaranTab extends StatelessWidget {
                 ),
               ),
             ),
+            // Ajakan perpanjang: tampil saat sesi terakhir tinggal 7 hari atau program selesai.
+            if (p.bisaDiperpanjang)
+              Container(
+                margin: const EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.fromLTRB(12, 6, 4, 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF1E6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(children: [
+                  const Icon(Icons.event_repeat_rounded, size: 20, color: Color(0xFFC56D2F)),
+                  const SizedBox(width: 9),
+                  Expanded(
+                    child: Text(
+                      p.status == 'selesai'
+                          ? 'Program ini sudah selesai. Mau lanjut belajar?'
+                          : 'Sesi terakhir ${Fmt.tanggal(Fmt.iso(p.tanggalSesiTerakhir ?? DateTime.now()))}. '
+                              'Perpanjang agar jadwalmu tidak putus.',
+                      style: const TextStyle(fontSize: 12, height: 1.4, color: Color(0xFF1D2A44)),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => _perpanjang(context, p),
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF00A896),
+                      textStyle: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    child: const Text('Perpanjang', style: TextStyle(color: Color(0xFF00A896))),
+                  ),
+                ]),
+              ),
             if (p.status == 'aktif' || p.status == 'menunggu')
               Align(
                 alignment: Alignment.centerRight,
@@ -269,6 +301,39 @@ class _PendaftaranTab extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Perpanjang = pendaftaran baru di program dan jadwal yang sama, tanggal mulai terisi otomatis.
+  Future<void> _perpanjang(BuildContext context, Pendaftaran p) async {
+    final nav = Navigator.of(context);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF00A896))),
+    );
+    BimbelDetail? detail;
+    String? galat;
+    try {
+      detail = await BimbelService.detail(p.bimbelId);
+    } on ApiException catch (e) {
+      galat = e.message;
+    }
+    nav.pop(); // tutup indikator loading
+    if (!context.mounted) return;
+    if (detail == null) {
+      showMsg(context, galat ?? 'Gagal memuat data bimbel', error: true);
+      return;
+    }
+    // Pendaftaran tidak menyimpan id program, jadi program dicocokkan lewat nama, jenjang, dan mapel.
+    final cocok = detail.program
+        .where((x) => x.nama == p.namaProgram && x.jenjang == p.jenjang && x.mapel == p.mapel)
+        .toList();
+    if (cocok.isEmpty) {
+      showMsg(context, 'Program ini sudah tidak tersedia. Pilih program lain di halaman bimbel.', error: true);
+      Navigator.pushNamed(context, '/detail', arguments: p.bimbelId);
+      return;
+    }
+    Navigator.pushNamed(context, '/daftar', arguments: DaftarArgs(detail, cocok.first, perpanjangDari: p));
   }
 
   Future<void> _batal(BuildContext context, Pendaftaran p, Future<void> Function() muatUlang) async {
