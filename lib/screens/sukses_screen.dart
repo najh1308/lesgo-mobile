@@ -97,14 +97,16 @@ class SuksesScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(color: const Color(0xFFE4F7F4), borderRadius: BorderRadius.circular(14)),
-              child: const Row(children: [
-                Icon(Icons.notifications_active_outlined, size: 20, color: Color(0xFF00A896)),
-                SizedBox(width: 10),
+              child: Row(children: [
+                const Icon(Icons.notifications_active_outlined, size: 20, color: Color(0xFF00A896)),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Pengingat aktif: kamu akan diberi notifikasi 1 hari dan 1 jam sebelum setiap sesi, '
-                    'bahkan saat aplikasi ditutup.',
-                    style: TextStyle(fontSize: 12.5, height: 1.45, color: Color(0xFF1D2A44)),
+                    AppSettings.i.pengingatJam > 0
+                        ? 'Pengingat aktif: kamu akan diberi notifikasi ${AppSettings.labelPengingat(AppSettings.i.pengingatJam)} '
+                            'sebelum setiap sesi, bahkan saat aplikasi ditutup. Bisa diubah di Profil.'
+                        : 'Pengingat jadwal sedang dimatikan. Aktifkan lagi di Profil.',
+                    style: const TextStyle(fontSize: 12.5, height: 1.45, color: Color(0xFF1D2A44)),
                   ),
                 ),
               ]),

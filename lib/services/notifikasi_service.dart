@@ -10,7 +10,8 @@ import '../models/models.dart';
 /// Notifikasi lokal (tanpa Firebase) yang dijadwalkan di sistem operasi,
 /// sehingga tetap muncul walau aplikasi sedang ditutup:
 /// 1. konfirmasi langsung saat pendaftaran berhasil,
-/// 2. pengingat 1 hari dan 1 jam sebelum SETIAP sesi mingguan,
+/// 2. pengingat N jam sebelum SETIAP sesi mingguan (N diatur pengguna di Profil,
+///    lihat AppSettings.pengingatJam; 0 = tidak ada pengingat),
 /// 3. dibatalkan otomatis jika pendaftaran dibatalkan atau pengguna keluar,
 /// 4. disinkronkan ulang tiap aplikasi dibuka (HP baru, instal ulang, ganti zona waktu).
 class NotifikasiService {
@@ -112,8 +113,11 @@ class NotifikasiService {
 
   /// Susun semua pengingat yang masih di masa depan untuk satu pendaftaran.
   /// Sesi berulang tiap minggu selama durasi program.
-  /// ID = idPendaftaran*1000 + nomorSesi*2 (+1 untuk pengingat H-1), 999 = konfirmasi.
+  /// ID = idPendaftaran*1000 + nomorSesi*2, 999 = konfirmasi.
+  /// Satu pengingat per sesi, dikirim [AppSettings.pengingatJam] jam sebelum sesi.
   static List<_Pengingat> _susun(Pendaftaran p) {
+    final jamSebelum = AppSettings.i.pengingatJam;
+    if (jamSebelum <= 0) return []; // pengguna mematikan pengingat
     final awal = _waktuSesi(p);
     if (awal == null) return [];
     final sekarang = tz.TZDateTime.now(tz.UTC);
@@ -127,15 +131,14 @@ class NotifikasiService {
       final jam = TimeUtil.konversi(tgl, p.jamMulai, zona);
       final dasar = p.id * 1000 + k * 2;
 
-      final satuJam = sesi.subtract(const Duration(hours: 1));
-      if (satuJam.isAfter(sekarang)) {
-        hasil.add(_Pengingat(dasar, satuJam, 'Les dimulai 1 jam lagi',
-            '${p.namaProgram} di ${p.bimbelNama}, pukul $jam.'));
-      }
-      final satuHari = sesi.subtract(const Duration(days: 1));
-      if (satuHari.isAfter(sekarang)) {
-        hasil.add(_Pengingat(dasar + 1, satuHari, 'Besok ada kelas',
-            '${p.namaProgram} di ${p.bimbelNama}, besok pukul $jam.'));
+      // Waktu pengingat = waktu sesi dikurangi jumlah jam pilihan pengguna.
+      final waktuIngat = sesi.subtract(Duration(hours: jamSebelum));
+      if (waktuIngat.isAfter(sekarang)) {
+        final judul = jamSebelum == 24 ? 'Besok ada kelas' : 'Les dimulai $jamSebelum jam lagi';
+        final isi = jamSebelum == 24
+            ? '${p.namaProgram} di ${p.bimbelNama}, besok pukul $jam.'
+            : '${p.namaProgram} di ${p.bimbelNama}, pukul $jam.';
+        hasil.add(_Pengingat(dasar, waktuIngat, judul, isi));
       }
     }
     hasil.sort((a, b) => a.waktu.compareTo(b.waktu));
@@ -176,9 +179,12 @@ class NotifikasiService {
   /// Dipanggil setelah pendaftaran berhasil.
   static Future<void> pendaftaranBerhasil(Pendaftaran p) async {
     if (!_siap) return;
+    final jam = AppSettings.i.pengingatJam;
+    final ket = jam > 0
+        ? 'Kamu akan diingatkan ${AppSettings.labelPengingat(jam)} sebelum tiap sesi.'
+        : 'Pengingat jadwal sedang dimatikan (atur di Profil).';
     await tampilkan(p.id * 1000 + 999, 'Pendaftaran berhasil',
-        '${p.namaProgram} di ${p.bimbelNama}. Mulai ${p.hari}, ${p.tanggalMulai} pukul ${p.jamMulai} WIB. '
-        'Pengingat jadwal sudah diaktifkan.');
+        '${p.namaProgram} di ${p.bimbelNama}. Mulai ${p.hari}, ${p.tanggalMulai} pukul ${p.jamMulai} WIB. $ket');
     await _jadwalkan(_susun(p).take(_maksPerPendaftaran).toList());
   }
 
